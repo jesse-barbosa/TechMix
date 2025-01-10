@@ -3,7 +3,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    return response()->json(['message' => 'API Laravel funcionando!']);
 });
-
-require __DIR__.'/auth.php';
