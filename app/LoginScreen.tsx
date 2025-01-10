@@ -12,17 +12,21 @@ export default function Login() {
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
 
+  const [ showPassword, setShowPassword ] = useState(false)
+
   const login = async () => {
     try {
       const response = await axios.post(`http://${API_URL}/api/login`, {
         email,
         password,
       });
-
-      console.log('Login sucesso:', response.data);
-
-      // Navegar para a tela Home
-      (navigation as any).navigate('Home');
+  
+      const { user, token } = response.data;
+  
+      console.log('Login sucesso:', user);
+  
+      // Navegar para a tela Home com os dados do usuário
+      (navigation as any).navigate('Home', { user, token });
     } catch (error: any) {
       if (error.response) {
         const message = error.response.data.message || 'Erro desconhecido no servidor';
@@ -35,6 +39,7 @@ export default function Login() {
       console.error('Erro durante o login:', error);
     }
   };
+  
   
   return (
     <View className="flex-1 justify-between items-center bg-neutral-800">
@@ -50,7 +55,7 @@ export default function Login() {
       </View>
       {/* Main */}
       <View className="w-full p-5">
-        {/* Input */}
+        {/* Input - Email */}
         <View className="mb-3">
           <Text className="text-white text-lg mb-1">Email</Text>
           <View className="flex-row items-center rounded-md px-3 w-full bg-neutral-700">
@@ -65,19 +70,22 @@ export default function Login() {
             />
           </View>
         </View>
-        {/* Input */}
+        {/* Input - Senha */}
         <View className="mb-3">
           <Text className="text-white text-lg mb-1">Senha</Text>
           <View className="flex-row items-center rounded-md px-3 w-full bg-neutral-700">
             <Lock size={20} color="#C0C0C0"/>
             <TextInput 
-              className="w-full text-neutral-300 py-4 ml-2"
-              placeholder="****"
+              className="flex-1 text-neutral-300 py-4 ml-2"
+              placeholder="******"
               placeholderTextColor="#C0C0C0"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
             />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              {showPassword ? <Eye size={20} color="#C0C0C0" /> : <EyeOff size={20} color="#C0C0C0" /> }
+            </TouchableOpacity>
           </View>
         </View>
 

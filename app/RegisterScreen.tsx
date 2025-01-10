@@ -2,7 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { ChevronLeft, User, Mail, Lock } from 'lucide-react-native'
+import { ChevronLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react-native'
 import API_URL from '../apiConfig';
 import "../global.css";
 
@@ -13,6 +13,8 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [showPassword, setShowPassword] = useState(false)
+
   const register = async () => {
     try {
       const response = await axios.post(`http://${API_URL}/api/register`, {
@@ -21,9 +23,12 @@ export default function Register() {
         password,
       });
   
-      console.log('Registro sucesso:', response.data);
+      const { user, token } = response.data;
   
-      (navigation as any).navigate('Login');
+      console.log('Registro bem-sucedido:', user);
+  
+      // Navegar para a tela Home com os dados do usuário
+      (navigation as any).navigate('Home', { user, token });
     } catch (error: any) {
       if (error.response) {
         const message = error.response.data.message || 'Erro desconhecido no servidor';
@@ -36,6 +41,7 @@ export default function Register() {
       console.error('Erro durante o registro:', error);
     }
   };
+  
 
   return (
     <View className="flex-1 justify-between items-center bg-neutral-800">
@@ -89,13 +95,16 @@ export default function Register() {
           <View className="flex-row items-center rounded-md px-3 w-full bg-neutral-700">
             <Lock size={20} color="#C0C0C0"/>
             <TextInput 
-              className="w-full text-neutral-300 py-4 ml-2"
+              className="flex-1 text-neutral-300 py-4 ml-2"
               placeholder="****"
               placeholderTextColor="#C0C0C0"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
             />
+            <TouchableOpacity onPress={() => (setShowPassword(!showPassword))}>
+              { showPassword ? <Eye size={20} color={'#C0C0C0'} /> : <EyeOff size={20} color={'#C0C0C0'} /> }
+            </TouchableOpacity>
           </View>
         </View>
       </View>
