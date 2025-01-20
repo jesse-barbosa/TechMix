@@ -1,50 +1,49 @@
-# Welcome to your Expo app 👋
+# Requisitos  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+- Servidor Local Apache e MySQL (Sugestão: [XAMPP](https://www.apachefriends.org/pt_br/download.html))
+- [Node.js](https://nodejs.org/en/download) (versão LTS recomendada)
+- [Git](https://git-scm.com/downloads)
 
-## Get started
+# Instalação e Execução
 
-1. Install dependencies
+## 1. Clone o repositório
+Primeiro, clone o repositório do projeto (ou baixe o repositório pelo GitHub) dentro da pasta htdocs:
 
-   ```bash
-   npm install
-   ```
+    git clone https://github.com/jesse-barbosa/TechMix.git
 
-2. Start the app
+## 2. Importe o banco
 
-   ```bash
+- 2.1 Primeiro, ligue os servidor Apache e MySQL no XAMPP
+- 2.2 Acesse o painel PhpMyAdmin: Digite "localhost/" no endereço de pesquisa do seu navegador
+- 2.3 - Crie um novo banco de dados com o nome "dbtechmix"
+- 2.4 - Clique na opção de importar
+- 2.5 - Importe o arquivo SQL localizado na pasta "banco" do projeto
+
+## 3. Instale as dependências  
+Instale todas as dependências necessárias usando npm ou yarn.
+
+Usando npm:
+
+    cd TechMix
+    npm install
+
+## 4. Inicie o Expo  
+Você pode iniciar o projeto diretamente com o comando:  
+
     npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+## 5. Baixe o aplicativo Expo Go no seu celular  
+Para visualizar o aplicativo no dispositivo, você precisará do aplicativo Expo Go.  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Baixe o Expo Go para Android](https://play.google.com/store/apps/details?id=host.exp.exponent)  
+- [Baixe o Expo Go para iOS](https://apps.apple.com/app/expo-go/id982107779)  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 6. Execute o aplicativo no seu dispositivo  
+Após iniciar o Expo, um QR Code será gerado no terminal ou na janela do navegador que abrirá automaticamente.  
 
-## Get a fresh project
+6.1 Abra o aplicativo Expo Go no seu dispositivo.
+6.2 Escaneie o QR Code exibido para carregar o aplicativo.
 
-When you're ready, run:
+Agora o aplicativo React Native deve rodar no seu dispositivo
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Se encontrar algum problema ou tiver dúvidas, consulte a [documentação oficial do Expo](https://docs.expo.dev/).
