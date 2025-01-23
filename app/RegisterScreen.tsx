@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { ChevronLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react-native'
-import API_URL from '../apiConfig';
+import { API_URL } from '../apiConfig';
 import "../global.css";
 
 export default function Register() {
@@ -17,7 +17,7 @@ export default function Register() {
 
   const register = async () => {
     try {
-      const response = await axios.post(`http://${API_URL}/api/register`, {
+      const response = await axios.post(`${API_URL}/register`, {
         name,
         email,
         password,
@@ -92,20 +92,21 @@ export default function Register() {
         {/* Input - Senha */}
         <View className="mb-3">
           <Text className="text-white text-lg mb-1">Senha</Text>
-          <View className="flex-row items-center rounded-md px-3 w-full bg-neutral-700">
-            <Lock size={20} color="#C0C0C0"/>
-            <TextInput 
-              className="flex-1 text-neutral-300 py-4 ml-2"
-              placeholder="****"
-              placeholderTextColor="#C0C0C0"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => (setShowPassword(!showPassword))}>
-              { showPassword ? <Eye size={20} color={'#C0C0C0'} /> : <EyeOff size={20} color={'#C0C0C0'} /> }
-            </TouchableOpacity>
-          </View>
+            <View className="flex-row items-center rounded-md px-3 w-full bg-neutral-700">
+              <Lock size={20} color="#C0C0C0"/>
+              <TextInput 
+                className="flex-1 text-neutral-300 py-4 ml-2"
+                placeholder="********"
+                placeholderTextColor="#C0C0C0"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity onPress={() => (setShowPassword(!showPassword))}>
+                { showPassword ? <Eye size={20} color={'#C0C0C0'} /> : <EyeOff size={20} color={'#C0C0C0'} /> }
+              </TouchableOpacity>
+            </View>
+          <Text className="text-neutral-400 text-sm mt-1">Tamanho mínimo de 8 caracteres</Text>
         </View>
       </View>
 

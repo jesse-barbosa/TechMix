@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { ChevronLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react-native'
-import API_URL from '../apiConfig';
+import { API_URL } from '../apiConfig';
 import "../global.css";
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
 
   const login = async () => {
     try {
-      const response = await axios.post(`http://${API_URL}/api/login`, {
+      const response = await axios.post(`${API_URL}/login`, {
         email,
         password,
       });
@@ -77,7 +77,7 @@ export default function Login() {
             <Lock size={20} color="#C0C0C0"/>
             <TextInput 
               className="flex-1 text-neutral-300 py-4 ml-2"
-              placeholder="******"
+              placeholder="********"
               placeholderTextColor="#C0C0C0"
               secureTextEntry={!showPassword}
               value={password}
@@ -87,6 +87,7 @@ export default function Login() {
               {showPassword ? <Eye size={20} color="#C0C0C0" /> : <EyeOff size={20} color="#C0C0C0" /> }
             </TouchableOpacity>
           </View>
+          <Text className="text-neutral-400 text-sm mt-1">Tamanho mínimo de 8 caracteres</Text>
         </View>
 
       </View>
