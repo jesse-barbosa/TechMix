@@ -21,12 +21,9 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            // Gerar um token de acesso com Sanctum
-            $token = $user->createToken('YourAppName')->plainTextToken;
-        
+
             return response()->json([
                 'message' => 'Login bem-sucedido!',
-                'token' => $token,
                 'user' => $user,
             ]);
         }        
@@ -50,12 +47,8 @@ class AuthController extends Controller
         'password' => Hash::make($request->password),
     ]);
 
-    // Gerar um token para o novo usuário
-    $token = $user->createToken('YourAppName')->plainTextToken;
-
     return response()->json([
         'message' => 'Usuário registrado com sucesso!',
-        'token' => $token,
         'user' => $user,
     ]);
 }
