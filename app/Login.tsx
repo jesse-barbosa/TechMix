@@ -2,12 +2,15 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { useDispatch } from 'react-redux';
+import { setUser } from '../slices/userSlice';
 import { ChevronLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react-native'
 import { API_URL } from '../apiConfig';
-import "../global.css";
+import "@/global.css";
 
 export default function Login() {
   const navigation = useNavigation()
+  const dispatch = useDispatch();
 
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
@@ -24,9 +27,12 @@ export default function Login() {
       const { user, token } = response.data;
   
       console.log('Login sucesso:', user);
+
+      // Atualiza o estado do Redux
+      dispatch(setUser(user));
   
-      // Navegar para a tela Home com os dados do usuário
-      (navigation as any).navigate('Home', { user, token });
+      // Navega para a tela Inicial
+      (navigation as any).navigate('Home');
     } catch (error: any) {
       if (error.response) {
         const message = error.response.data.message || 'Erro desconhecido no servidor';
@@ -46,7 +52,7 @@ export default function Login() {
       {/* Header */}
       <View className="w-full p-5">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="bg-yellow-400 rounded-full p-2">
+          <TouchableOpacity onPress={() => navigation.goBack()} className="bg-customYellow rounded-full p-2">
             <ChevronLeft size={24} color="#262525" />
           </TouchableOpacity>
           <Text className="text-white text-4xl font-bold ml-4">Entrar</Text>
@@ -93,14 +99,19 @@ export default function Login() {
       </View>
       {/* Footer */}
       <View className="w-full p-5">
-        <TouchableOpacity className="w-full bg-yellow-400 p-4" onPress={login}>
+        <TouchableOpacity className="bg-customYellow w-full p-4" onPress={login}>
           <Text className="text-neutral-800 text-lg font-extrabold text-center">Entrar</Text>
         </TouchableOpacity>
-        <Text className="text-white text-md text-center mt-3">Não tem uma conta?
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12 }}>
+          <Text className="text-white text-md">Não tem uma conta? </Text>
           <TouchableOpacity onPress={() => (navigation as any).navigate('Register')}>
-            <Text className="font-bold text-yellow-400"> Registre-se</Text>
+            <Text 
+              className="font-bold text-customYellow" 
+            >
+              Registre-se
+            </Text>
           </TouchableOpacity>
-        </Text>
+        </View>
       </View>
     </View>
   );
