@@ -30,7 +30,28 @@ Em seguida, instale as dependências:
 
     composer install
 
-## 4. Gere a chave da aplicação Laravel
+## 4. Configure o arquivo .env do Laravel
+
+Dentro da pasta `TechMix/back-end`, copie o arquivo de exemplo `.env.example` e renomeie para `.env`:
+
+    cp .env.example .env
+
+Em seguida, edite o arquivo `.env` e configure as credenciais do banco de dados:
+
+Exemplo:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=dbtechmix
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Salve o arquivo e feche o editor.
+
+## 5. Gere a chave da aplicação Laravel
 
 Ainda dentro da pasta `TechMix/back-end`, execute o seguinte comando para gerar a chave da aplicação:
 
@@ -38,7 +59,7 @@ Ainda dentro da pasta `TechMix/back-end`, execute o seguinte comando para gerar 
 
 Esse comando criará e armazenará uma chave única no arquivo `.env`, essencial para a segurança e criptografia do Laravel.
 
-## 5. Instale as dependências do React Native
+## 6. Instale as dependências do React Native
 
 Primeiro, abra a pasta `TechMix` no terminal:
 
@@ -48,7 +69,7 @@ Em seguida, instale as dependências:
 
     npm install
 
-## 6. Configure a API
+## 7. Configure a API
 
 Crie um arquivo `apiConfig.tsx` na pasta raiz do projeto React Native (`TechMix`), e adicione o seguinte conteúdo:
 
@@ -62,20 +83,20 @@ Substitua `(seuIP)` pelo seu IP real. Caso necessário, defina a porta após a A
 export const API_URL = 'http://192.168.0.100:8000/api';
 ```
 
-## 7. Inicie o Expo  
+## 8. Inicie o Expo  
 
 Você pode iniciar o projeto diretamente com o comando:
 
     npx expo start
 
-## 8. Baixe o aplicativo Expo Go no seu celular  
+## 9. Baixe o aplicativo Expo Go no seu celular  
 
 Para visualizar o aplicativo no dispositivo, você precisará do aplicativo Expo Go.  
 
 - [Baixe o Expo Go para Android](https://play.google.com/store/apps/details?id=host.exp.exponent)  
 - [Baixe o Expo Go para iOS](https://apps.apple.com/app/expo-go/id982107779)  
 
-## 9. Execute o aplicativo no seu dispositivo  
+## 10. Execute o aplicativo no seu dispositivo  
 
 Após iniciar o Expo, um QR Code será gerado no terminal ou na janela do navegador que abrirá automaticamente.
 
