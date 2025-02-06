@@ -30,7 +30,15 @@ Em seguida, instale as dependências:
 
     composer install
 
-## 4. Instale as dependências do React Native
+## 4. Gere a chave da aplicação Laravel
+
+Ainda dentro da pasta `TechMix/back-end`, execute o seguinte comando para gerar a chave da aplicação:
+
+    php artisan key:generate
+
+Esse comando criará e armazenará uma chave única no arquivo `.env`, essencial para a segurança e criptografia do Laravel.
+
+## 5. Instale as dependências do React Native
 
 Primeiro, abra a pasta `TechMix` no terminal:
 
@@ -40,7 +48,7 @@ Em seguida, instale as dependências:
 
     npm install
 
-## 5. Configure a API
+## 6. Configure a API
 
 Crie um arquivo `apiConfig.tsx` na pasta raiz do projeto React Native (`TechMix`), e adicione o seguinte conteúdo:
 
@@ -54,20 +62,20 @@ Substitua `(seuIP)` pelo seu IP real. Caso necessário, defina a porta após a A
 export const API_URL = 'http://192.168.0.100:8000/api';
 ```
 
-## 6. Inicie o Expo  
+## 7. Inicie o Expo  
 
 Você pode iniciar o projeto diretamente com o comando:
 
     npx expo start
 
-## 7. Baixe o aplicativo Expo Go no seu celular  
+## 8. Baixe o aplicativo Expo Go no seu celular  
 
 Para visualizar o aplicativo no dispositivo, você precisará do aplicativo Expo Go.  
 
 - [Baixe o Expo Go para Android](https://play.google.com/store/apps/details?id=host.exp.exponent)  
 - [Baixe o Expo Go para iOS](https://apps.apple.com/app/expo-go/id982107779)  
 
-## 8. Execute o aplicativo no seu dispositivo  
+## 9. Execute o aplicativo no seu dispositivo  
 
 Após iniciar o Expo, um QR Code será gerado no terminal ou na janela do navegador que abrirá automaticamente.
 
