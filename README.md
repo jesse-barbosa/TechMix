@@ -34,23 +34,6 @@ Em seguida, instale as dependências:
 
 Dentro da pasta `TechMix/back-end`, copie o arquivo de exemplo `.env.example` e renomeie para `.env`:
 
-    cp .env.example .env
-
-Em seguida, edite o arquivo `.env` e configure as credenciais do banco de dados:
-
-Exemplo:
-
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=dbtechmix
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Salve o arquivo e feche o editor.
-
 ## 5. Gere a chave da aplicação Laravel
 
 Ainda dentro da pasta `TechMix/back-end`, execute o seguinte comando para gerar a chave da aplicação:
