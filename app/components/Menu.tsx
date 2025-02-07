@@ -13,7 +13,7 @@ const Menu = () => {
   }
 
   return (
-    <View className="component flex-row w-full justify-between p-6">
+    <View className="component flex-row w-full justify-between p-4">
       <TouchableOpacity onPress={() => (navigation as any).navigate('Home')}>
         <Home size={32} color={isActive('Home') ? '#fff' : '#C0C0C0'} />
       </TouchableOpacity>
