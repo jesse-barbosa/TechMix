@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
 import { useState, useEffect } from 'react';
+import { debounce } from 'lodash';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Heart, MapPin, Search } from 'lucide-react-native';
@@ -26,54 +27,55 @@ export default function Home() {
   }
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const debouncedSearch = debounce(() => {
+    search();
+  }, 500); // Wait 500ms before triggering
+  
+  useEffect(() => {
+    if (searchTerm.trim().length > 0) {
+      debouncedSearch();
+    } else {
+      setProducts([]); // Clear results when search is empty
+    }
+  }, [searchTerm]);
 
   const getImageUrl = (imageURL: string) => {
-    console.log('Original imageURL:', imageURL); // Debug log
-
-    if (!imageURL) {
-      console.log('imageURL is empty or undefined');
-      return 'https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg'; // Placeholder image
-    }
-    if (imageURL.startsWith('http://') || imageURL.startsWith('https://')) {
-      console.log('Using full URL:', imageURL);
-      return imageURL;
-    }
-
-    // Remove '/storage/' from the beginning if it exists
+    // Ensure we remove '/storage/' from the start if it exists
     const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
-    const url = `${API_URL}/storage/${cleanedPath}`;
-    console.log('Generated image URL:', url); // Debug log
+  
+    // Remove '/api' from the end of the API_URL safely
+    const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
+  
+    const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
+    console.log('Generated image URL:', url); // Debugging
     return url;
-  };
+  };  
 
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/getProducts`);
+  const search = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/searchProducts?search=${searchTerm}`);
 
-        if (Array.isArray(response.data.products)) {
-          setProducts(response.data.products);
-          console.log('Produtos buscados com sucesso:', JSON.stringify(response.data.products, null, 2));
-        } else {
-          console.error('Expected an array of products, but received:', response.data);
-          Alert.alert('Erro ao buscar Produtos', 'Formato de dados inesperado do servidor.');
-        }
-
-      } catch (error: any) {
-        if (error.response) {
-          const message = error.response.data.message || 'Erro desconhecido no servidor';
-          Alert.alert('Erro ao buscar Produtos', message);
-        } else if (error.request) {
-          Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
-        } else {
-          Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
-        }
-        console.error('Erro durante a busca de produtos:', error);
+      if (Array.isArray(response.data.products)) {
+        setProducts(response.data.products);
+        console.log('Pesquisa realizada com sucesso:', JSON.stringify(response.data.products, null, 2));
+      } else {
+        Alert.alert('Erro ao realizar pesquisa', 'Formato de dados inesperado do servidor.');
       }
-    };
 
-    getProducts();
-  }, [user]);
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao realizar pesquisa', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca:', error);
+    }
+  };
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -84,8 +86,10 @@ export default function Home() {
             className="text-white text-lg" 
             style={{ width: '90%' }}
             placeholderTextColor="#D1D5DB"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
           />
-          <TouchableOpacity onPress={() => (navigation as any).navigate('Search')}>
+          <TouchableOpacity onPress={() => search()}>
             <Search size={26} color="#C0C0C0" />
           </TouchableOpacity>
         </View>
@@ -96,11 +100,10 @@ export default function Home() {
         {/* Horizontal ScrollView for products */}
         <ScrollView showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
           {products.map((product, index) => {
-            console.log('Rendering product:', JSON.stringify(product, null, 2)); // Debug log
             return (
               <View key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
                 <View className="mr-4">
-                  <Image 
+                  <Image
                     source={{ uri: getImageUrl(product.imageURL) }}
                     className="rounded-lg rounded-r-none h-full w-28"
                     onError={(e) => {

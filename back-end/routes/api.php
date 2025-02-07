@@ -14,4 +14,5 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/getProducts', [HomeController::class, 'getProducts']);
+
 Route::get('/searchProducts', [SearchController::class, 'searchProducts']);

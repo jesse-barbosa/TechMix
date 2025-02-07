@@ -21,6 +21,7 @@
     "axios": "^1.7.9",
     "expo": "^52.0.24",
     "expo-router": "~4.0.17",
+    "lodash": "^4.17.21",
     "lucide-react-native": "^0.469.0",
     "react": "18.3.1",
     "react-native": "0.76.6",
