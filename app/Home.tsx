@@ -27,23 +27,16 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
 
   const getImageUrl = (imageURL: string) => {
-    console.log('Original imageURL:', imageURL); // Debug log
-
-    if (!imageURL) {
-      console.log('imageURL is empty or undefined');
-      return 'https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg'; // Placeholder image
-    }
-    if (imageURL.startsWith('http://') || imageURL.startsWith('https://')) {
-      console.log('Using full URL:', imageURL);
-      return imageURL;
-    }
-
-    // Remove '/storage/' from the beginning if it exists
+    // Ensure we remove '/storage/' from the start if it exists
     const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
-    const url = `${API_URL}/storage/${cleanedPath}`;
-    console.log('Generated image URL:', url); // Debug log
+  
+    // Remove '/api' from the end of the API_URL safely
+    const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
+  
+    const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
+    console.log('Generated image URL:', url); // Debugging
     return url;
-  };
+  };  
 
   useEffect(() => {
     const getProducts = async () => {
