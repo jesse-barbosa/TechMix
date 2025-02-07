@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-na
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { ShoppingCart, Heart, MapPin } from 'lucide-react-native';
+import { Heart, MapPin } from 'lucide-react-native';
 import axios from 'axios';
 import "@/global.css";
 import Menu from "@/app/components/Menu";
@@ -89,7 +89,7 @@ export default function Home() {
                 <View className="mr-4">
                   <Image 
                     source={{ uri: getImageUrl(product.imageURL) }}
-                    className="rounded-lg rounded-r-none h-full w-24"
+                    className="rounded-lg rounded-r-none h-full w-28"
                     onError={(e) => {
                       console.log('Image load error:', e.nativeEvent.error);
                       // Set a placeholder image when the original fails to load
@@ -122,25 +122,6 @@ export default function Home() {
           );
         })}
         </ScrollView>
-
-        <TouchableOpacity className="bg-blue-500 p-4 rounded-lg mb-4">
-          <Text className="text-white text-center text-lg">Explore Now</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row items-center justify-center bg-green-500 p-4 rounded-lg mb-4">
-          <ShoppingCart size={24} color="white" />
-          <Text className="text-white text-center text-lg ml-2">View Cart</Text>
-        </TouchableOpacity>
-
-        <View className="bg-neutral-700 p-6 rounded-lg mb-4">
-          <Text className="text-white text-xl font-semibold">Featured Product</Text>
-          <Text className="text-neutral-400 mt-2">Check out our latest tech gadgets!</Text>
-        </View>
-
-        <View className="bg-neutral-700 p-6 rounded-lg mb-4">
-          <Text className="text-white text-xl font-semibold">Latest News</Text>
-          <Text className="text-neutral-400 mt-2">Stay updated with the latest tech news.</Text>
-        </View>
       </ScrollView>
       <Menu />
     </View>
