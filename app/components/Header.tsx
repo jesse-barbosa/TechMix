@@ -8,10 +8,10 @@ const Header = () => {
   const navigation = useNavigation();
 
   return (
-    <View className="component flex-row w-full justify-between items-center p-2">
+    <View className="component flex-row w-full justify-between items-center p-4">
       <Image 
         source={require('@/assets/images/icon.png')} 
-        style={{ height: 45, width: 45 }} 
+        style={{ height: 35, width: 53 }} 
         className="mr-2" 
       />
       <View className="bg-neutral-800 flex-row justify-between items-center px-3 rounded-lg">
