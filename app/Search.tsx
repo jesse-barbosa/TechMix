@@ -1,17 +1,12 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store';
 import { Heart, MapPin, Search, ArchiveX } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import "@/global.css";
 import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {
-  const user = useSelector((state: RootState) => state.user);
-  const navigation = useNavigation();
 
   // Defining type for Products
   type Product = {
