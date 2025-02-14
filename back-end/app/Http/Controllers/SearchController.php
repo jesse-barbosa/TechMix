@@ -14,15 +14,12 @@ class SearchController extends Controller
         $searchTerm = $request->input("search");
 
         if (!$searchTerm) {
-            return response()->json([
-                'success' => false,
-                'products' => [],
-                'message' => 'No search term provided'
-            ]);
-        }
-
+        // Fetch all products with their associated stores if no search term is provided
+            $products = Product::with('store')->get();
+        } else {
         // Fetch Products with their associated stores
         $products = Product::where('name', 'like', '%'. $searchTerm .'%')->get();
+        }
 
         // Transform the data to include only necessary store information
         $transformedProducts = $products->map(function ($product) {
