@@ -88,7 +88,7 @@ export default function Home() {
             </View>
           </View>
         ) : (
-          <ScrollView contentContainerStyle={{ padding: 20 }}>
+          <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
             <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
 
             {/* Horizontal ScrollView for products */}
