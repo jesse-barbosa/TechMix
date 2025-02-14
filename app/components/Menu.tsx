@@ -20,8 +20,8 @@ const Menu = () => {
       <TouchableOpacity onPress={() => (navigation as any).navigate('Search')}>
         <Search size={32} color={isActive('Search') ? '#fff' : '#C0C0C0'} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => (navigation as any).navigate('Saves')}>
-        <Bookmark size={32} color={isActive('Saves') ? '#fff' : '#C0C0C0'} />
+      <TouchableOpacity onPress={() => (navigation as any).navigate('Favs')}>
+        <Bookmark size={32} color={isActive('Favs') ? '#fff' : '#C0C0C0'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('Configs')}>
         <User2 size={32} color={isActive('Configs') ? '#fff' : '#C0C0C0'} />

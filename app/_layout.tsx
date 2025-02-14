@@ -6,6 +6,7 @@ import LoginScreen from './Login';
 import RegisterScreen from './Register';
 import HomeScreen from './Home';
 import SearchScreen from './Search';
+import FavsScreen from './Favs';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ function App() {
         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Favs" component={FavsScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </Provider>
   );
