@@ -93,7 +93,6 @@ export default function Login() {
               {showPassword ? <Eye size={20} color="#C0C0C0" /> : <EyeOff size={20} color="#C0C0C0" /> }
             </TouchableOpacity>
           </View>
-          <Text className="text-neutral-400 text-sm mt-1">Tamanho mínimo de 8 caracteres</Text>
         </View>
 
       </View>
