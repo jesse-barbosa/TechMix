@@ -14,6 +14,7 @@ export default function Home() {
 
   // Defining type for Products
   type Product = {
+    id: number;
     name: string;
     price: string;
     store: {
@@ -22,6 +23,7 @@ export default function Home() {
     };
     location: string;
     imageURL: string;
+    saved: boolean;
   }
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -34,38 +36,49 @@ export default function Home() {
     const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
   
     const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
-    console.log('Generated image URL:', url); // Debugging
+    // console.log('Generated image URL:', url); // Debugging
     return url;
   };  
 
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/getProducts`);
+  const getProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/getProducts?userId=${user.id}`);
 
-        if (Array.isArray(response.data.products)) {
-          setProducts(response.data.products);
-          console.log('Produtos buscados com sucesso:', JSON.stringify(response.data.products, null, 2));
-        } else {
-          console.error('Expected an array of products, but received:', response.data);
-          Alert.alert('Erro ao buscar Produtos', 'Formato de dados inesperado do servidor.');
-        }
-
-      } catch (error: any) {
-        if (error.response) {
-          const message = error.response.data.message || 'Erro desconhecido no servidor';
-          Alert.alert('Erro ao buscar Produtos', message);
-        } else if (error.request) {
-          Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
-        } else {
-          Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
-        }
-        console.error('Erro durante a busca de produtos:', error);
+      if (Array.isArray(response.data.products)) {
+        setProducts(response.data.products);
+        console.log('Produtos buscados com sucesso:', JSON.stringify(response.data.products, null, 2));
+      } else {
+        console.error('Expected an array of products, but received:', response.data);
+        Alert.alert('Erro ao buscar Produtos', 'Formato de dados inesperado do servidor.');
       }
-    };
 
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao buscar Produtos', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca de produtos:', error);
+    }
+  };
+
+  useEffect(() => {
     getProducts();
   }, [user]);
+
+  const handleFavoriteToggle = async (productId: number) => {
+    console.log('ProductId:', productId)
+    try {
+      const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
+      console.log(response.data.message);
+      getProducts(); // Refresh results to update saved status
+    } catch (error) {
+      console.log('Erro ao favoritar:', error);
+    }
+  };
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -108,8 +121,12 @@ export default function Home() {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity className="flex items-end justify-end p-2 rounded-lg mt-2">
-                <Heart size={24} color="white" />
+              <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
+                {product.saved ? (
+                  <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+                ) : (
+                  <Heart size={24} color="white" />
+                )}
               </TouchableOpacity>
             </View>
           );
