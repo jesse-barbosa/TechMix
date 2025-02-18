@@ -1,3 +1,12 @@
+# Demonstração do Projeto
+
+<div align="center">
+    <image src="./assets/demo/login_page.png" alt="Tela de Login" width="240">
+    <image src="./assets/demo/home_page.png" alt="Tela Inicial" width="240">
+    <image src="./assets/demo/search_page.png" alt="Tela de Pesquisa" width="240">
+    <image src="./assets/demo/settings_page.png" alt="Tela de Configurações" width="240">
+</div>
+
 # Requisitos  
 
 - Servidor Local Apache e MySQL (Sugestão: [XAMPP](https://www.apachefriends.org/pt_br/download.html))
