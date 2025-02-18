@@ -14,6 +14,8 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/getProducts', [HomeController::class, 'getProducts']);
 
+Route::get('/getStores', [HomeController::class, 'getStores']);
+
 Route::get('/searchProducts', [SearchController::class, 'searchProducts']);
 
 Route::post('/toggleFavorite', [FavoriteController::class, 'toggleFavorite']);

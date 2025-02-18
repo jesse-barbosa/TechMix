@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Store;
 use App\Models\Favorite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,6 +35,16 @@ class HomeController extends Controller
         return response()->json([
             'success' => true,
             'products' => $transformedProducts,
+        ]);
+    }
+    public function getStores(Request $request): JsonResponse
+    {
+        // Fetch Stores
+        $stores = Store::all();
+
+        return response()->json([
+            'success' => true,
+            'stores' => $stores,
         ]);
     }
 }
