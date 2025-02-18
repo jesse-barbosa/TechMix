@@ -7,7 +7,7 @@ import RegisterScreen from './Register';
 import HomeScreen from './Home';
 import SearchScreen from './Search';
 import FavsScreen from './Favs';
-import UserScreen from './User';
+import UserScreen from './Settings';
 
 const Stack = createStackNavigator();
 
