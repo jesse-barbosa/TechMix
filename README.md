@@ -75,20 +75,30 @@ Substitua `(seuIP)` pelo seu IP real. Caso necessário, defina a porta após a A
 export const API_URL = 'http://192.168.0.100:8000/api';
 ```
 
-## 8. Inicie o Expo  
+## 8. Inicie o Laravel  
+
+Dentro da pasta `TechMix/back-end`, execute o projeto com o comando:
+
+    php artisan serve --host=(seuIP)
+
+Substitua `(seuIP)` pelo seu IP real. Caso necessário, defina a porta após o parâmetro host, por exemplo:
+
+    php artisan serve --host=192.168.0.100 --port=8000
+
+## 9. Inicie o Expo  
 
 Você pode iniciar o projeto diretamente com o comando:
 
     npx expo start
 
-## 9. Baixe o aplicativo Expo Go no seu celular  
+## 10. Baixe o aplicativo Expo Go no seu celular  
 
 Para visualizar o aplicativo no dispositivo, você precisará do aplicativo Expo Go.  
 
 - [Baixe o Expo Go para Android](https://play.google.com/store/apps/details?id=host.exp.exponent)  
 - [Baixe o Expo Go para iOS](https://apps.apple.com/app/expo-go/id982107779)  
 
-## 10. Execute o aplicativo no seu dispositivo  
+## 11. Execute o aplicativo no seu dispositivo  
 
 Após iniciar o Expo, um QR Code será gerado no terminal ou na janela do navegador que abrirá automaticamente.
 
@@ -97,4 +107,4 @@ Após iniciar o Expo, um QR Code será gerado no terminal ou na janela do navega
 
 Agora o aplicativo React Native deve rodar no seu dispositivo.
 
-Se encontrar algum problema ou tiver dúvidas, consulte a [documentação oficial do Expo](https://docs.expo.dev/).
+Se encontrar algum problema ou tiver dúvidas, consulte a [documentação oficial do Expo](https://docs.expo.dev/) ou entre em contato comigo pelo meu e-mail: [barbosajesse419@gmail.com](mailto:barbosajesse419@gmail.com).
