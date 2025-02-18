@@ -7,6 +7,7 @@ import RegisterScreen from './Register';
 import HomeScreen from './Home';
 import SearchScreen from './Search';
 import FavsScreen from './Favs';
+import UserScreen from './User';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ function App() {
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="Favs" component={FavsScreen} options={{ headerShown: false, animation: 'none' }} />
+        <Stack.Screen name="User" component={UserScreen} options={{ headerShown: false, animation: 'none' }} />
       </Stack.Navigator>
     </Provider>
   );
