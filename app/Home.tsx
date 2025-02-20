@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -10,6 +11,7 @@ import Header from "@/app/components/Header";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {
+  const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user);
 
   // Defining type for Products
@@ -25,16 +27,20 @@ export default function Home() {
     saved: boolean;
   }
 
-    // Defining type for Stores
-    type Store = {
-      id: number;
-      name: string;
-      imageURL: string;
-      city: string;
-    }
+  // Defining type for Stores
+  type Store = {
+    id: number;
+    name: string;
+    imageURL: string;
+    city: string;
+  }
 
   const [products, setProducts] = useState<Product[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
+
+  const handleProductClick = (productId: number) => {
+    (navigation as any).navigate('ViewProduct', { productId });
+  };
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -130,7 +136,7 @@ export default function Home() {
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {products.map((product, index) => {
             return (
-              <View key={index} className="flex-row bg-neutral-700 h-40 rounded-lg mr-4">
+              <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 h-40 rounded-lg mr-4">
                 <View className="mr-4">
                   <Image 
                     source={getImageUrl(product.imageURL, 'product')}
@@ -163,7 +169,7 @@ export default function Home() {
                     <Heart size={24} color="white" />
                   )}
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
