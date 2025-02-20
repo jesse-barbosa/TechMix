@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-na
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import { Heart, MapPin, ChevronLeft, Frown } from 'lucide-react-native';
 import axios from 'axios';
@@ -11,6 +12,7 @@ import { API_URL } from '@/apiConfig';
 export default function ViewProduct() {
   const user = useSelector((state: RootState) => state.user);
   const route = useRoute();
+  const navigation = useNavigation();
   const { productId } = route.params as { productId: number };
 
   type Product = {
@@ -102,9 +104,9 @@ export default function ViewProduct() {
         {product.map((item, index) => (
           <View key={index} className="mb-6">
             <View className="flex-row items-center justify-between px-3 py-4">
-              <Text className="text-neutral-200 text-2xl font-bold">
+              <TouchableOpacity className="h-30 w-30" onPress={() => navigation.goBack()}>
                 <ChevronLeft size={32} color="white" />
-              </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity onPress={() => handleFavoriteToggle(item.id)} className="flex items-end">
                 {item.saved ? (
