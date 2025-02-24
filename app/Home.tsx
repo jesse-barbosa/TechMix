@@ -1,9 +1,11 @@
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Heart, MapPin, Smartphone, Laptop, Watch, Headphones } from 'lucide-react-native';
+import { Heart, MapPin } from 'lucide-react-native';
+import { CircleHelp, Monitor, Laptop, Cpu, Keyboard, HardDrive, Printer, Wifi, Smartphone, Gamepad } from 'lucide-react-native';
 import axios from 'axios';
 import "@/global.css";
 import Menu from "@/app/components/Menu";
@@ -13,6 +15,20 @@ import { API_URL } from '@/apiConfig';
 export default function Home() {
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user);
+
+  const defaultIcon = <CircleHelp size={22} color="gray" />;
+
+  const iconMapping: { [key: string]: React.ElementType } = {
+    'hard-drive': HardDrive, // Nome adaptado por conta do caractére hífen
+    monitor: Monitor,
+    laptop: Laptop,
+    cpu: Cpu,
+    keyboard: Keyboard,
+    printer: Printer,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    gamepad: Gamepad,
+  };  
 
   // Defining type for Products
   type Product = {
@@ -35,7 +51,16 @@ export default function Home() {
     city: string;
   }
 
+  // Defining type for Categories
+  type Categorie = {
+    id: number;
+    name: string;
+    icon: string;
+    description: string;
+  }
+
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Categorie[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
 
   const handleProductClick = (productId: number) => {
@@ -87,6 +112,30 @@ export default function Home() {
     }
   };
 
+  const getCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/getCategories`);
+
+      if (Array.isArray(response.data.categories)) {
+        setCategories(response.data.categories);
+      } else {
+        console.error('Expected an array of categories, but received:', response.data);
+        Alert.alert('Erro ao buscar Categorias', 'Formato de dados inesperado do servidor.');
+      }
+
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao buscar Categorias', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca de categorias:', error);
+    }
+  };
+
   const getStores = async () => {
     try {
       const response = await axios.get(`${API_URL}/getStores?userId=${user.id}`);
@@ -113,6 +162,7 @@ export default function Home() {
 
   useEffect(() => {
     getProducts();
+    getCategories();
     getStores();
   }, [user]);
 
@@ -176,22 +226,17 @@ export default function Home() {
 
         <Text className="text-neutral-400 text-2xl font-bold mb-4">Categorias</Text>
         <View className="flex-row flex-wrap justify-between">
-          <TouchableOpacity className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
-            <Smartphone size={22} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">Smartphones</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex flex-row space-x-2 w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
-            <Laptop size={22} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">Laptops</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex flex-row space-x-2 w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
-            <Watch size={22} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">Relógios</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex flex-row space-x-2 w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
-            <Headphones size={22} color="white" />
-            <Text className="text-white text-lg font-bold ml-2">Áudio</Text>
-          </TouchableOpacity>
+        {categories.map((categorie, index) => {
+          const IconComponent = iconMapping[categorie.icon.toLowerCase() as keyof typeof iconMapping]; // Normalizando a chave
+          console.log(`Icon for ${categorie.name}:`, IconComponent); // Debugging line
+
+          return (
+            <TouchableOpacity key={categorie.id} className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
+              {IconComponent ? React.createElement(IconComponent, { size: 22, color: "white" }) : defaultIcon}
+              <Text className="text-white text-lg font-bold ml-2">{categorie.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
         </View>
 
         <Text className="text-neutral-400 text-2xl font-bold mb-4">Lojas perto de você</Text>

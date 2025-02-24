@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Categorie;
 use App\Models\Store;
 use App\Models\Favorite;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +38,17 @@ class HomeController extends Controller
             'products' => $transformedProducts,
         ]);
     }
+    public function getCategories(): JsonResponse
+    {
+        // Fetch 4 random Categories
+        $categories = Categorie::inRandomOrder()->limit(4)->get();
+
+        return response()->json([
+            'success' => true,
+            'categories' => $categories,
+        ]);
+    }
+
     public function getStores(Request $request): JsonResponse
     {
         // Fetch Stores
