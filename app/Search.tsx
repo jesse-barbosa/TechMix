@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -9,6 +10,7 @@ import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {
+  const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user);
 
   type Product = {
@@ -26,6 +28,10 @@ export default function Home() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleProductClick = (productId: number) => {
+    (navigation as any).navigate('ViewProduct', { productId });
+  };
 
   useEffect(() => {
     search();
@@ -101,7 +107,7 @@ export default function Home() {
             <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
             <ScrollView showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
               {products.map((product, index) => (
-                <View key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
+                <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
                   <View className="mr-4">
                     <Image
                       source={{ uri: getImageUrl(product.imageURL) }}
@@ -136,7 +142,7 @@ export default function Home() {
                       <Heart size={24} color="white" />
                     )}
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </ScrollView>
