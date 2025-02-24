@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
-import { Heart, MapPin, ChevronLeft, Frown } from 'lucide-react-native';
+import { Heart, MapPin, ChevronLeft, Frown, Star } from 'lucide-react-native';
 import axios from 'axios';
 import "@/global.css";
 import { API_URL } from '@/apiConfig';
@@ -155,7 +155,15 @@ export default function ViewProduct() {
                       {new Date(review.created_at).toLocaleDateString("en-GB")}
                     </Text>
                   </View>
-                  <Text className="text-neutral-400 flex-1 mt-2">{review.message}</Text>
+                  <View className="flex flex-row items-center my-1">
+                    {Array.from({ length: review.stars }).map((_, i) => (
+                      <Star key={`filled-${i}`} size={20} color="#FACC15" fill="#FACC15" />
+                    ))}
+                    {Array.from({ length: 5 - review.stars }).map((_, i) => (
+                      <Star key={`empty-${i}`} size={20} color="#A3A3A3" />
+                    ))}
+                  </View>
+                  <Text className="text-neutral-400 flex-1 max-w-[300] text-sm">{review.message}</Text>
                 </View>
                 </TouchableOpacity>
               ))}
