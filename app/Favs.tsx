@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -10,6 +11,7 @@ import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {
+  const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user);
 
   type Product = {
@@ -26,9 +28,13 @@ export default function Home() {
 
   const [products, setProducts] = useState<Product[]>([]);
 
+  const handleProductClick = (productId: number) => {
+    (navigation as any).navigate('ViewProduct', { productId });
+  };
+
   useEffect(() => {
     getSavedProducts();
-  }, []); // Run only once when the component mounts
+  }, []);
 
   const getImageUrl = (imageURL: string) => {
     const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
@@ -86,7 +92,7 @@ export default function Home() {
             <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Produtos Salvos</Text>
             <ScrollView showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
               {products.map((product, index) => (
-                <View key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
+                <TouchableOpacity onPress={() => handleProductClick(product.id)} key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
                   <View className="mr-4">
                     <Image
                       source={{ uri: getImageUrl(product.imageURL) }}
@@ -117,7 +123,7 @@ export default function Home() {
                   <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
                     <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </ScrollView>
