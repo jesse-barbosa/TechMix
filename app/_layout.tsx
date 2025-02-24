@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
 import store from '../store';
+import '@/global.css';
 /* Pages */
 import LoginScreen from './Login';
 import RegisterScreen from './Register';

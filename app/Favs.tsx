@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Heart, MapPin, ArchiveX } from 'lucide-react-native';
 import axios from 'axios';
-import "@/global.css";
 import Header from "@/app/components/Header";
 import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';

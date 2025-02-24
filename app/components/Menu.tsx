@@ -2,7 +2,6 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Home, Search, Bookmark, User2 } from 'lucide-react-native';
-import "@/global.css";
 
 const Menu = () => {
   const navigation = useNavigation();

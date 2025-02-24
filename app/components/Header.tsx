@@ -2,7 +2,6 @@ import React from 'react';
 import { View, TextInput, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Search } from 'lucide-react-native';
-import "@/global.css";
 
 const Header = () => {
   const navigation = useNavigation();

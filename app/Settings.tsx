@@ -2,7 +2,6 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { ChevronRight, Heart, User, Settings, HelpCircle } from 'lucide-react-native';
-import "@/global.css";
 import Menu from "@/app/components/Menu";
 
 export default function Home() {

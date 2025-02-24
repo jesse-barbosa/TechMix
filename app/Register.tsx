@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../slices/userSlice';
 import { ChevronLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react-native'
 import { API_URL } from '../apiConfig';
-import "@/global.css";
 
 export default function Register() {
   const navigation = useNavigation()

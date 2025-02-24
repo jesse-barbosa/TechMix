@@ -6,7 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import { Heart, MapPin, ChevronLeft, Frown, Star } from 'lucide-react-native';
 import axios from 'axios';
-import "@/global.css";
 import { API_URL } from '@/apiConfig';
 
 export default function ViewProduct() {
