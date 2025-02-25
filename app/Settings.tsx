@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { ChevronRight, Heart, User, Settings, HelpCircle } from 'lucide-react-native';
@@ -6,6 +7,7 @@ import Menu from "@/app/components/Menu";
 
 export default function Home() {
   const user = useSelector((state: RootState) => state.user);
+  const navigation = useNavigation();
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -24,7 +26,7 @@ export default function Home() {
       </View>
 
       <View className="px-4 mt-8">
-        <TouchableOpacity className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-2 flex-row items-center justify-between">
+        <TouchableOpacity onPress={() => (navigation as any).navigate('Favs')} className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-2 flex-row items-center justify-between">
           <View className="flex-row items-center">
             <Heart size={26} color="#e5e5e5" />
             <Text className="text-neutral-200 text-2xl font-semibold ml-3">Meus Favoritos</Text>
