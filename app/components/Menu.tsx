@@ -14,16 +14,16 @@ const Menu = () => {
   return (
     <View className="component flex-row w-full justify-between p-5">
       <TouchableOpacity onPress={() => (navigation as any).navigate('Home')}>
-        <Home size={32} color={isActive('Home') ? '#fff' : '#C0C0C0'} />
+        <Home size={32} color={isActive('Home') ? '#fff' : '#C0C0C0'} fill={isActive('Home') ? '#292929' : 'none'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('Search')}>
-        <Search size={32} color={isActive('Search') ? '#fff' : '#C0C0C0'} />
+        <Search size={32} color={isActive('Search') ? '#fff' : '#C0C0C0'} fill={isActive('Search') ? '#292929' : 'none'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('Favs')}>
-        <Bookmark size={32} color={isActive('Favs') ? '#fff' : '#C0C0C0'} />
+        <Bookmark size={32} color={isActive('Favs') ? '#fff' : '#C0C0C0'} fill={isActive('Favs') ? '#292929' : 'none'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('User')}>
-        <User2 size={32} color={isActive('User') ? '#fff' : '#C0C0C0'} />
+        <User2 size={32} color={isActive('User') ? '#fff' : '#C0C0C0'} fill={isActive('User') ? '#292929' : 'none'} />
       </TouchableOpacity>
     </View>
   );
