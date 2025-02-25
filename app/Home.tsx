@@ -168,7 +168,6 @@ export default function Home() {
   const handleFavoriteToggle = async (productId: number) => {
     try {
       const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
-      console.log(response.data.message);
       getProducts(); // Refresh results to update saved status
     } catch (error) {
       console.log('Erro ao favoritar:', error);
@@ -227,7 +226,6 @@ export default function Home() {
         <View className="flex-row flex-wrap justify-between">
         {categories.map((categorie, index) => {
           const IconComponent = iconMapping[categorie.icon.toLowerCase() as keyof typeof iconMapping]; // Normalizando a chave
-          console.log(`Icon for ${categorie.name}:`, IconComponent); // Debugging line
 
           return (
             <TouchableOpacity key={categorie.id} className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">

@@ -44,10 +44,8 @@ export default function Home() {
   };
 
   const handleFavoriteToggle = async (productId: number) => {
-    console.log('ProductId:', productId)
     try {
       const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
-      console.log(response.data.message);
       search(); // Refresh search results to update saved status
     } catch (error) {
       console.log('Erro ao favoritar:', error);
@@ -59,7 +57,6 @@ export default function Home() {
       const response = await axios.get(`${API_URL}/searchProducts?search=${searchTerm}&userId=${user.id}`);
       if (Array.isArray(response.data.products)) {
         setProducts(response.data.products);
-        console.log('Pesquisa realizada com sucesso:', JSON.stringify(response.data.products, null, 2));
       } else {
         Alert.alert('Erro ao realizar pesquisa', 'Formato de dados inesperado do servidor.');
       }

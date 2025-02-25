@@ -24,8 +24,6 @@ export default function Login() {
       });
   
       const { user, token } = response.data;
-  
-      console.log('Login sucesso:', user);
 
       // Atualiza o estado do Redux
       dispatch(setUser(user));
