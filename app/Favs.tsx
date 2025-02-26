@@ -107,7 +107,7 @@ export default function Home() {
                       <Text className="text-white text-lg font-bold max-w-[200px]">
                         {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
                       </Text>
-                      <Text className="text-neutral-200 text-2xl">{product.price}</Text>
+                      <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
                     </View>
                     <View>
                       <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
