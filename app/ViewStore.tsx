@@ -89,7 +89,7 @@ export default function ViewProduct() {
 
           <View className="flex justify-center items-center">
             <Image 
-              source={getImageUrl(store.imageURL, 'product')}
+              source={getImageUrl(store.imageURL, 'store')}
               className="rounded-full h-64 w-64"
               onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
               />
