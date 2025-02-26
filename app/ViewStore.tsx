@@ -97,7 +97,9 @@ export default function ViewProduct() {
 
             <View className="p-4">
             <Text className="text-white text-3xl text-center">{store.name}</Text>
-            <Text className="text-neutral-400 text-md text-center py-8">{store.description}</Text>
+
+            <Text className="text-neutral-400 text-lg text-center py-8">{store.description ? store.description : 'Sem descrição disponível'}</Text>
+            
             <View className="flex-row items-center">
                 <MapPin size={16} color="white" />
                 <Text className="text-neutral-300 text-lg pl-3">{store.city}</Text>
