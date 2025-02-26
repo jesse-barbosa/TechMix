@@ -25,8 +25,14 @@ export default function Home() {
     saved: boolean;
   }
 
+  const searchTypes = {
+    'product': ['Produtos'],
+    'store': ['Lojas'],
+   };
+
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
   const [filterVisible, setFilterVisible] = useState(false);
 
   const handleProductClick = (productId: number) => {
@@ -110,11 +116,22 @@ export default function Home() {
         ) : (
           <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
             <View className="flex-row justify-between">
-              <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
+              <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
               <TouchableOpacity onPress={() => setFilterVisible(true)}>
                 <SlidersHorizontal size={24} color="#C0C0C0" />
               </TouchableOpacity>
             </View>
+            <View className="flex-row gap-2 py-4">
+            {Object.entries(searchTypes).map(([key, value]) => (
+              <TouchableOpacity
+                key={key}
+                className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
+                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
+              </TouchableOpacity>
+            ))}
+            </View>
+            
             <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
               {products.map((product, index) => (
                 <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
