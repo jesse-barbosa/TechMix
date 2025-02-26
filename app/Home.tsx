@@ -66,6 +66,10 @@ export default function Home() {
     (navigation as any).navigate('ViewProduct', { productId });
   };
 
+  const handleStoreClick = (storeId: number) => {
+    (navigation as any).navigate('ViewStore', { storeId });
+  };
+
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
       if (type === 'product') {
@@ -239,7 +243,7 @@ export default function Home() {
         <Text className="text-neutral-400 text-2xl font-bold mb-4">Lojas perto de você</Text>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
           {stores.map((store, index) => (
-            <View key={index} className="flex items-center bg-neutral-700 rounded-lg mr-4 p-4 w-48 h-56">
+            <TouchableOpacity onPress={() => handleStoreClick(store.id)} key={index} className="flex items-center bg-neutral-700 rounded-lg mr-4 p-4 w-48 h-56">
               <Image 
                 source={ getImageUrl(store.imageURL, 'store') }
                 className="rounded-full h-32 w-32"
@@ -253,7 +257,7 @@ export default function Home() {
                 <MapPin size={16} color="white" />
                 <Text className="text-neutral-400 pl-1">{store.city}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </ScrollView>
