@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Models\Product;
+use App\Models\Categorie;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,17 @@ class SearchController extends Controller
         return response()->json([
             'success' => true,
             'products' => $transformedProducts,
+        ]);
+    }
+
+    public function getAllCategories(): JsonResponse
+    {
+        // Fetch Categories
+        $categories = Categorie::get();
+
+        return response()->json([
+            'success' => true,
+            'categories' => $categories,
         ]);
     }
 }

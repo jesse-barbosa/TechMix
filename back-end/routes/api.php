@@ -22,6 +22,8 @@ Route::get('/getCategories', [HomeController::class, 'getCategories']);
 
 Route::get('/searchProducts', [SearchController::class, 'searchProducts']);
 
+Route::get('/getAllCategories', [SearchController::class, 'getAllCategories']);
+
 Route::post('/toggleFavorite', [FavoriteController::class, 'toggleFavorite']);
 
 Route::get('/getSavedProducts', [FavsController::class, 'getSavedProducts']);

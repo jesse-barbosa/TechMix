@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
+import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -25,6 +26,13 @@ export default function Home() {
     saved: boolean;
   }
 
+  type Category = {
+    id: number;
+    name: string;
+    description: string;
+    icon: string;
+  }
+
   const searchTypes = {
     'product': ['Produtos'],
     'store': ['Lojas'],
@@ -34,14 +42,19 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
   const [filterVisible, setFilterVisible] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [locations, setLocations] = useState(['']);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
 
   const handleProductClick = (productId: number) => {
     (navigation as any).navigate('ViewProduct', { productId });
   };
 
   useEffect(() => {
+    getCategories();
     search();
-  }, [searchTerm]);
+  }, [searchTerm, selectedCategory, selectedLocation]);
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -66,6 +79,29 @@ export default function Home() {
       console.log('Erro ao favoritar:', error);
     }
   };
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/getAllCategories`);
+      if (Array.isArray(response.data.categories)){
+        setCategories(response.data.categories);
+      } else {
+        Alert.alert('Erro ao buscar categorias', 'Formato de dados inesperado do servidor.');
+        console.log('Dados recebidos: ', response.data);
+      }
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao realizar consulta', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca:', error);
+    }
+  };
+
 
   const search = async () => {
     try {
@@ -180,15 +216,50 @@ export default function Home() {
           setFilterVisible(!filterVisible);
         }}
       >
-        <View className="flex-1 justify-center items-center">
-          <View className="bg-neutral-600 p-6 rounded-lg w-3/4">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl text-white font-semibold">Filtrar resultados</Text>
-            <TouchableOpacity onPress={() => setFilterVisible(!filterVisible)}>
-              <CircleX size={26} color="#FFF" />
+        <View className="flex-1 justify-center items-center mx-4">
+          <View className="bg-neutral-600 p-6 rounded-lg w-full">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-3xl text-white font-semibold">Filtrar resultados</Text>
+              <TouchableOpacity onPress={() => setFilterVisible(false)}>
+                <CircleX size={26} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+            <View className="mb-4">
+              <Text className="text-neutral-200 text-xl mb-2">Categoria</Text>
+              <Picker
+                selectedValue={selectedCategory}
+                onValueChange={(itemValue: string) => setSelectedCategory(itemValue)}
+                style={{
+                  color: "#FFF",
+                  backgroundColor: "#636363",
+                }}
+              >
+                <Picker.Item label="Geral" value="" />
+                {categories.map((category, index) => (
+                  <Picker.Item key={index} label={category.name} value={category.name} />
+                ))}
+              </Picker>
+            </View>
+            <View className="mb-4">
+              <Text className="text-neutral-200 text-xl mb-2">Localização</Text>
+              <Picker
+                selectedValue={selectedLocation}
+                onValueChange={(itemValue: string) => setSelectedLocation(itemValue)}
+                style={{
+                  color: "#FFF",
+                  backgroundColor: "#636363",
+                  borderRadius: 10,
+                }}
+              >
+                <Picker.Item label="Geral" value="" />
+                {locations.map((location, index) => (
+                  <Picker.Item key={index} label={location} value={location} />
+                ))}
+              </Picker>
+            </View>
+            <TouchableOpacity onPress={() => setFilterVisible(false)} className="bg-yellow-500 p-3 mt-4 ">
+              <Text className="text-center text-neutral-800 font-bold text-lg">Aplicar Filtros</Text>
             </TouchableOpacity>
-          </View>
-            {/* Filter options*/}
           </View>
         </View>
       </Modal>
