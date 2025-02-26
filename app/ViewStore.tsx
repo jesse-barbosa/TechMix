@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
-import { ChevronLeft, Flag, MapPin, Star, Heart } from 'lucide-react-native';
+import { ChevronLeft, Flag, MapPin, Star, ArchiveX, Heart } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -74,24 +74,7 @@ export default function ViewProduct() {
       const response = await axios.get(`${API_URL}/getStoreData?userId=${user.id}&storeId=${storeId}`);
       if (response.data.store) {
         setStore(response.data.store);
-          try {
-            const response = await axios.get(`${API_URL}/getProducts?userId=${user.id}`);
-            if (Array.isArray(response.data.products)) {
-              setProducts(response.data.products);
-            } else {
-              Alert.alert('Erro ao realizar consulta', 'Formato de dados inesperado do servidor.');
-            }
-          } catch (error: any) {
-            if (error.response) {
-              const message = error.response.data.message || 'Erro desconhecido no servidor';
-              Alert.alert('Erro ao procurar produtos', message);
-            } else if (error.request) {
-              Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
-            } else {
-              Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
-            }
-            console.error('Erro durante a busca de produtos:', error);
-          }
+        setProducts(response.data.products);
       } else {
         Alert.alert('Erro ao buscar Loja', 'Formato de dados inesperado do servidor.');
       }
@@ -156,36 +139,43 @@ export default function ViewProduct() {
         )}
 
         <Text className="text-neutral-300 font-semibold text-3xl ms-2 mb-4">Produtos</Text>
-        {products.map((product, index) => (
-          <TouchableOpacity onPress={() => handleProductClick(product.id)} key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
-            <View className="mr-4">
-            <Image 
-              source={getImageUrl(product.imageURL, 'product')}
-              className="rounded-lg rounded-r-none h-full w-32"
-              onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
-              />
+        {products.length === 0 ?
+          <View className="flex-1 flex justify-center items-center py-20 px-4">
+            <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
+              <ArchiveX size={42} color="#C0C0C0" />
+              <Text className="text-neutral-400 text-2xl font-bold mt-2">Nenhum produto disponível! :(</Text>
             </View>
-            <View className="flex-1 flex flex-col justify-between py-2">
-              <View>
-                <Text className="text-white text-lg font-bold max-w-[200px]">
-                  {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
-                </Text>
-                <Text className="text-neutral-200 text-2xl">{product.price}</Text>
+          </View>
+        :
+          products.map((product, index) => (
+            <TouchableOpacity onPress={() => handleProductClick(product.id)} key={index} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
+              <View className="mr-4">
+              <Image 
+                source={getImageUrl(product.imageURL, 'product')}
+                className="rounded-lg rounded-r-none h-full w-32"
+                onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
+                />
               </View>
-              <View>
-                <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
-                <View className="flex-row items-center">
-                  <MapPin size={16} color="white" />
-                  <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
+              <View className="flex-1 flex flex-col justify-between py-2">
+                <View>
+                  <Text className="text-white text-lg font-bold max-w-[200px]">
+                    {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
+                  </Text>
+                  <Text className="text-neutral-200 text-2xl">{product.price}</Text>
+                </View>
+                <View>
+                  <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
+                  <View className="flex-row items-center">
+                    <MapPin size={16} color="white" />
+                    <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-            <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
-              <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+              <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
+                <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
-
+          ))}
       </ScrollView>
     </View>
   );
