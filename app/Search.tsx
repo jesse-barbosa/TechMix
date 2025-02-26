@@ -1,9 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Heart, MapPin, Search, ArchiveX } from 'lucide-react-native';
+import { Heart, MapPin, Search, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';
@@ -27,6 +27,7 @@ export default function Home() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterVisible, setFilterVisible] = useState(false);
 
   const handleProductClick = (productId: number) => {
     (navigation as any).navigate('ViewProduct', { productId });
@@ -44,22 +45,17 @@ export default function Home() {
         return require('@/assets/images/stores/default_store.png');
       }
     } else {
-      // Remover '/storage/' do começo, se existir
       const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
-      
-      // Remover '/api' do final da API_URL
       const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
-      
       const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
-      
-      return { uri: url }; // Retornar um objeto com a chave uri
+      return { uri: url };
     }
   };
 
   const handleFavoriteToggle = async (productId: number) => {
     try {
       const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
-      search(); // Refresh search results to update saved status
+      search();
     } catch (error) {
       console.log('Erro ao favoritar:', error);
     }
@@ -89,7 +85,7 @@ export default function Home() {
   return (
     <View className="flex-1 bg-neutral-800">
       <View className="mt-6 mx-4">
-        <View className="bg-neutral-900 w-full flex-row justify-between items-center py-1 px-3 rounded-lg">
+        <View className="bg-neutral-700 w-full flex-row justify-between items-center py-1 px-3 rounded-xl">
           <TextInput 
             placeholder="Buscar Produto ou Loja..." 
             className="text-neutral-200 text-lg" 
@@ -113,8 +109,13 @@ export default function Home() {
           </View>
         ) : (
           <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
-            <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
-            <ScrollView showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
+            <View className="flex-row justify-between">
+              <Text className="text-neutral-400 text-2xl font-bold mb-4"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
+              <TouchableOpacity onPress={() => setFilterVisible(true)}>
+                <SlidersHorizontal size={24} color="#C0C0C0" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
               {products.map((product, index) => (
                 <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
                   <View className="mr-4">
@@ -154,6 +155,26 @@ export default function Home() {
           </ScrollView>
         )}
       <Menu />
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={filterVisible}
+        onRequestClose={() => {
+          setFilterVisible(!filterVisible);
+        }}
+      >
+        <View className="flex-1 justify-center items-center">
+          <View className="bg-neutral-600 p-6 rounded-lg w-3/4">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl text-white font-semibold">Filtrar resultados</Text>
+            <TouchableOpacity onPress={() => setFilterVisible(!filterVisible)}>
+              <CircleX size={26} color="#FFF" />
+            </TouchableOpacity>
+          </View>
+            {/* Filter options*/}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
