@@ -36,11 +36,24 @@ export default function Home() {
     search();
   }, [searchTerm]);
 
-  const getImageUrl = (imageURL: string) => {
-    const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
-    const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
-    const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
-    return url;
+  const getImageUrl = (imageURL: string, type: string) => {
+    if (!imageURL) {
+      if (type === 'product') {
+        return require('@/assets/images/products/default_product.png');
+      } else {
+        return require('@/assets/images/stores/default_store.png');
+      }
+    } else {
+      // Remover '/storage/' do começo, se existir
+      const cleanedPath = imageURL.replace(/^\/?(storage\/)?/, '');
+      
+      // Remover '/api' do final da API_URL
+      const cleanedApiUrl = API_URL.replace(/\/api\/?$/, '');
+      
+      const url = `${cleanedApiUrl}/storage/${cleanedPath}`;
+      
+      return { uri: url }; // Retornar um objeto com a chave uri
+    }
   };
 
   const handleFavoriteToggle = async (productId: number) => {
@@ -106,13 +119,10 @@ export default function Home() {
                 <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
                   <View className="mr-4">
                     <Image
-                      source={{ uri: getImageUrl(product.imageURL) }}
+                      source={getImageUrl(product.imageURL, 'product')}
                       className="rounded-lg rounded-r-none h-full w-28"
                       onError={(e) => {
                         console.log('Image load error:', e.nativeEvent.error);
-                        (e.currentTarget as any).setNativeProps({
-                          source: [{ uri: "https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg" }]
-                        });
                       }}
                     />
                   </View>
