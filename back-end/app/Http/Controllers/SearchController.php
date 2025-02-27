@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Models\Product;
-use App\Models\Categorie;
+use App\Models\Category;
 use App\Models\SearchHistory;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
@@ -73,7 +73,7 @@ class SearchController extends Controller
     public function getAllCategories(): JsonResponse
     {
         // Fetch Categories
-        $categories = Categorie::get();
+        $categories = Category::get();
 
         return response()->json([
             'success' => true,

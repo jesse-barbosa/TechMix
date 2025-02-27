@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Categorie;
+use App\Models\Category;
 use App\Models\Store;
 use App\Models\Favorite;
 use Illuminate\Http\JsonResponse;
@@ -41,7 +41,7 @@ class HomeController extends Controller
     public function getCategories(): JsonResponse
     {
         // Fetch 4 random Categories
-        $categories = Categorie::inRandomOrder()->limit(4)->get();
+        $categories = Category::inRandomOrder()->limit(4)->get();
 
         return response()->json([
             'success' => true,
