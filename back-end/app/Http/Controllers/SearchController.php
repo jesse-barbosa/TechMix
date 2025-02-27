@@ -15,15 +15,17 @@ class SearchController extends Controller
     public function getSearchHistory(Request $request): JsonResponse 
     {
         $userId = $request->input("userId");
-
-        // Fetch History with their associated stores
-        $searchHistory = SearchHistory::where('userId', $userId)->get();
-
+    
+        // Fetch history in descending order by 'created_at'
+        $searchHistory = SearchHistory::where('userId', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
         return response()->json([
             'success' => true,
             'searchHistory' => $searchHistory,
         ]);
-    }
+    }    
 
     public function search(Request $request): JsonResponse
     {
