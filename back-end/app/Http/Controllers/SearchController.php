@@ -6,23 +6,45 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Models\Product;
 use App\Models\Categorie;
+use App\Models\SearchHistory;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function searchProducts(Request $request): JsonResponse
+    public function getSearchHistory(Request $request): JsonResponse 
+    {
+        $userId = $request->input("userId");
+
+        // Fetch History with their associated stores
+        $searchHistory = SearchHistory::where('userId', $userId)->get();
+
+        return response()->json([
+            'success' => true,
+            'searchHistory' => $searchHistory,
+        ]);
+    }
+
+    public function search(Request $request): JsonResponse
     {
         $searchTerm = $request->input("search");
         $userId = $request->input("userId");
 
-        if (!$searchTerm) {
-        // Fetch all products with their associated stores if no search term is provided
-            $products = Product::with('store')->get();
-        } else {
+        if (!$userId || !$searchTerm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User ID and search term are required',
+            ], 400);
+        }
+
         // Fetch Products with their associated stores
         $products = Product::where('name', 'like', '%'. $searchTerm .'%')->with('store')->get();
-        }
+
+        // Create search history
+        SearchHistory::create([
+            'userId' => $userId,
+            'searchMessage' => $searchTerm,
+        ]);
 
         // Transform the data to include only necessary store information
         $transformedProducts = $products->map(function ($product) use ($userId) {

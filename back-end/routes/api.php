@@ -20,7 +20,9 @@ Route::get('/getStores', [HomeController::class, 'getStores']);
 
 Route::get('/getCategories', [HomeController::class, 'getCategories']);
 
-Route::get('/searchProducts', [SearchController::class, 'searchProducts']);
+Route::get('/getSearchHistory', [SearchController::class, 'getSearchHistory']);
+
+Route::post('/search', [SearchController::class, 'search']);
 
 Route::get('/getAllCategories', [SearchController::class, 'getAllCategories']);
 

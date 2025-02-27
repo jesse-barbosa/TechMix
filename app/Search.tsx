@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Heart, MapPin, Search, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
+import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
 import { API_URL } from '@/apiConfig';
@@ -36,7 +36,7 @@ export default function Home() {
   const searchTypes = {
     'product': ['Produtos'],
     'store': ['Lojas'],
-   };
+  };
 
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,6 +46,8 @@ export default function Home() {
   const [locations, setLocations] = useState(['']);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<{ searchMessage: string }[]>([]);
 
   const handleProductClick = (productId: number) => {
     (navigation as any).navigate('ViewProduct', { productId });
@@ -53,8 +55,8 @@ export default function Home() {
 
   useEffect(() => {
     getCategories();
-    search();
-  }, [searchTerm, selectedCategory, selectedLocation]);
+    getHistory();
+  }, []);
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -80,10 +82,23 @@ export default function Home() {
     }
   };
 
+  const getHistory = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}`);
+      if (Array.isArray(response.data.searchHistory)) {
+        setSearchHistory(response.data.searchHistory);
+      } else {
+        console.log('Formato inesperado:', response.data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar histórico:', error);
+    }
+  };
+
   const getCategories = async () => {
     try {
       const response = await axios.get(`${API_URL}/getAllCategories`);
-      if (Array.isArray(response.data.categories)){
+      if (Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
       } else {
         Alert.alert('Erro ao buscar categorias', 'Formato de dados inesperado do servidor.');
@@ -102,12 +117,13 @@ export default function Home() {
     }
   };
 
-
   const search = async () => {
+    if (searchTerm.trim() === '') return;
     try {
-      const response = await axios.get(`${API_URL}/searchProducts?search=${searchTerm}&userId=${user.id}`);
+      const response = await axios.post(`${API_URL}/search?search=${searchTerm}&userId=${user.id}`);
       if (Array.isArray(response.data.products)) {
         setProducts(response.data.products);
+        setShowHistory(false)
       } else {
         Alert.alert('Erro ao realizar pesquisa', 'Formato de dados inesperado do servidor.');
       }
@@ -135,18 +151,42 @@ export default function Home() {
             placeholderTextColor="#A3A3A3"
             value={searchTerm}
             onChangeText={setSearchTerm}
+            onFocus={() => setShowHistory(true)}
+            onBlur={() => setTimeout(() => setShowHistory(false), 200)}
           />
           <TouchableOpacity onPress={() => search()}>
             <Search size={26} color="#C0C0C0" />
           </TouchableOpacity>
         </View>
+        {showHistory && searchHistory.length > 0 && (
+          <View className="absolute bg-neutral-700 top-14 w-full mt-2 rounded-lg p-2 shadow-lg z-10">
+            {searchHistory.map((item, index) => (
+              <TouchableOpacity key={index} 
+              className="flex-row justify-between items-center"
+              onPress={() => {
+                setSearchTerm(item.searchMessage);
+                search()
+                setShowHistory(false);
+              }}>
+                <View className="flex-row items-center gap-1">
+                  <TouchableOpacity
+                    className="hover:bg-neutral-600">
+                    <History size={26} color="#C0C0C0" />
+                  </TouchableOpacity>
+                  <Text className="text-neutral-300 text-lg p-2">{item.searchMessage}</Text>
+                </View>
+                <X size={26} color="#C0C0C0" className="ms-auto" />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
-      {
-        products.length === 0 ? (
+      {products.length === 0 ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
             <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
               <ArchiveX size={42} color="#C0C0C0" />
-              <Text className="text-neutral-400 text-2xl font-bold mt-2">Nada encontrado! :(</Text>
+              <Text className="text-neutral-300 text-2xl font-bold mt-2">Nenhum resultado encontrado</Text>
+              <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
             </View>
           </View>
         ) : (
@@ -158,14 +198,14 @@ export default function Home() {
               </TouchableOpacity>
             </View>
             <View className="flex-row gap-2 py-4">
-            {Object.entries(searchTypes).map(([key, value]) => (
-              <TouchableOpacity
-                key={key}
-                className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
-                <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
-              </TouchableOpacity>
-            ))}
+              {Object.entries(searchTypes).map(([key, value]) => (
+                <TouchableOpacity
+                  key={key}
+                  className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
+                  onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                  <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
             
             <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
