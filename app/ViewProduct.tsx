@@ -59,9 +59,9 @@ export default function ViewProduct() {
     }
   };
 
-  const getInfoProduct = async () => {
+  const getProductData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/getInfoProduct?userId=${user.id}&productId=${productId}`);
+      const response = await axios.get(`${API_URL}/getProductData?userId=${user.id}&productId=${productId}`);
       if (Array.isArray(response.data.product)) {
         setProduct(response.data.product);
         if (Array.isArray(response.data.reviews)) {
@@ -85,13 +85,13 @@ export default function ViewProduct() {
   };
 
   useEffect(() => {
-    getInfoProduct();
+    getProductData();
   }, [user]);
 
   const handleFavoriteToggle = async (productId: number) => {
     try {
       const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
-      getInfoProduct();
+      getProductData();
     } catch (error) {
       console.log('Erro ao favoritar:', error);
     }

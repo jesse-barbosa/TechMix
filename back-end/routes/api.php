@@ -30,6 +30,6 @@ Route::post('/toggleFavorite', [FavoriteController::class, 'toggleFavorite']);
 
 Route::get('/getSavedProducts', [FavsController::class, 'getSavedProducts']);
 
-Route::get('/getInfoProduct', [ViewProductController::class, 'getInfoProduct']);
+Route::get('/getProductData', [ViewProductController::class, 'getProductData']);
 
 Route::get('/getStoreData', [ViewStoreController::class, 'getStoreData']);

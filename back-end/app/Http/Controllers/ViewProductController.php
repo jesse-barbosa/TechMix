@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class ViewProductController extends Controller
 {
-    public function getInfoProduct(Request $request): JsonResponse
+    public function getProductData(Request $request): JsonResponse
     {
         $productId = $request->input("productId");
 
