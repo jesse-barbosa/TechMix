@@ -16,9 +16,9 @@ class SearchController extends Controller
     {
         $userId = $request->input("userId");
     
-        // Fetch history in descending order by 'created_at'
+        // Fetch history in descending order by 'updated_at'
         $searchHistory = SearchHistory::where('userId', $userId)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
     
         return response()->json([
@@ -31,24 +31,36 @@ class SearchController extends Controller
     {
         $searchTerm = $request->input("search");
         $userId = $request->input("userId");
-
+    
         if (!$userId || !$searchTerm) {
             return response()->json([
                 'success' => false,
                 'message' => 'User ID and search term are required',
             ], 400);
         }
-
-        // Fetch Products with their associated stores
-        $products = Product::where('name', 'like', '%'. $searchTerm .'%')->with('store')->get();
-
-        // Create search history
-        SearchHistory::create([
-            'userId' => $userId,
-            'searchMessage' => $searchTerm,
-        ]);
-
-        // Transform the data to include only necessary store information
+    
+        // Buscar produtos com base no termo de pesquisa
+        $products = Product::where('name', 'like', '%'. $searchTerm .'%')
+            ->with('store')
+            ->get();
+    
+        // Verifica se já existe um histórico com a mesma mensagem para o usuário
+        $existingHistory = SearchHistory::where('userId', $userId)
+            ->where('searchMessage', $searchTerm)
+            ->first();
+    
+        if ($existingHistory) {
+            // Apenas atualiza o updated_at para trazer para o topo na exibição
+            $existingHistory->touch();
+        } else {
+            // Cria um novo histórico caso não exista
+            SearchHistory::create([
+                'userId' => $userId,
+                'searchMessage' => $searchTerm,
+            ]);
+        }
+    
+        // Transformar os produtos para incluir apenas as informações necessárias
         $transformedProducts = $products->map(function ($product) use ($userId) {
             $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
             return [
@@ -60,15 +72,16 @@ class SearchController extends Controller
                     'name' => $product->store->name,
                     'city' => $product->store->city,
                 ],
-            'saved' => $isSaved,
-        ];
+                'saved' => $isSaved,
+            ];
         });
-
+    
         return response()->json([
             'success' => true,
             'products' => $transformedProducts,
         ]);
     }
+    
 
     public function getAllCategories(): JsonResponse
     {
