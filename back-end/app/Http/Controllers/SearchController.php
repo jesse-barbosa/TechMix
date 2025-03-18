@@ -25,7 +25,21 @@ class SearchController extends Controller
             'success' => true,
             'searchHistory' => $searchHistory,
         ]);
-    }    
+    }
+
+    public function deleteSearchHistory(Request $request): JsonResponse 
+    {
+        $searchHistoryId = $request->input("id");
+    
+        // Delete Search History
+        $searchHistory = SearchHistory::where('id', $searchHistoryId)
+            ->delete();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Search History deleted successfully',
+        ]);
+    }
 
     public function search(Request $request): JsonResponse
     {

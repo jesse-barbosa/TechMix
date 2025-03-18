@@ -47,7 +47,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [showHistory, setShowHistory] = useState(false);
-  const [searchHistory, setSearchHistory] = useState<{ searchMessage: string }[]>([]);
+  const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
 
   const handleProductClick = (productId: number) => {
     (navigation as any).navigate('ViewProduct', { productId });
@@ -94,6 +94,15 @@ export default function Home() {
       console.error('Erro ao buscar histórico:', error);
     }
   };
+
+  const deleteSearchHistory = async (id: number) => {
+    try {
+      const response = await axios.post(`${API_URL}/deleteSearchHistory?id=${id}`);
+      getHistory() // Refresh History
+    } catch (error) {
+      console.log('Erro ao excluir:', error)
+    }
+  }
 
   const getCategories = async () => {
     try {
@@ -175,7 +184,9 @@ export default function Home() {
                   </TouchableOpacity>
                   <Text className="text-neutral-300 text-lg p-2">{item.searchMessage}</Text>
                 </View>
-                <X size={26} color="#C0C0C0" className="ms-auto" />
+                <TouchableOpacity onPress={() => deleteSearchHistory(item.id)}>
+                  <X size={26} color="#C0C0C0" className="ms-auto" />
+                </TouchableOpacity>
               </TouchableOpacity>
             ))}
           </View>

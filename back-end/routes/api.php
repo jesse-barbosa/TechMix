@@ -22,6 +22,8 @@ Route::get('/getCategories', [HomeController::class, 'getCategories']);
 
 Route::get('/getSearchHistory', [SearchController::class, 'getSearchHistory']);
 
+Route::post('/deleteSearchHistory', [SearchController::class, 'deleteSearchHistory']);
+
 Route::post('/search', [SearchController::class, 'search']);
 
 Route::get('/getAllCategories', [SearchController::class, 'getAllCategories']);
