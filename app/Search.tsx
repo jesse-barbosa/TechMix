@@ -84,7 +84,7 @@ export default function Home() {
 
   const getHistory = async () => {
     try {
-      const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}`);
+      const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}&searchTerm=${searchTerm}`);
       if (Array.isArray(response.data.searchHistory)) {
         setSearchHistory(response.data.searchHistory);
       } else {
@@ -159,7 +159,10 @@ export default function Home() {
             style={{ width: '90%' }}
             placeholderTextColor="#A3A3A3"
             value={searchTerm}
-            onChangeText={setSearchTerm}
+            onChangeText={(text) => {
+              setSearchTerm(text);
+              getHistory()
+            }}
             onFocus={() => setShowHistory(true)}
             onBlur={() => setTimeout(() => setShowHistory(false), 200)}
           />

@@ -15,17 +15,21 @@ class SearchController extends Controller
     public function getSearchHistory(Request $request): JsonResponse 
     {
         $userId = $request->input("userId");
+        $searchTerm = $request->input("searchTerm");
     
-        // Fetch history in descending order by 'updated_at'
-        $searchHistory = SearchHistory::where('userId', $userId)
-            ->orderBy('updated_at', 'desc')
-            ->get();
+        $query = SearchHistory::where('userId', $userId);
+    
+        if (!empty($searchTerm)) {
+            $query->where('searchMessage', 'LIKE', "%{$searchTerm}%");
+        }
+    
+        $searchHistory = $query->orderBy('updated_at', 'desc')->get();
     
         return response()->json([
             'success' => true,
             'searchHistory' => $searchHistory,
         ]);
-    }
+    }    
 
     public function deleteSearchHistory(Request $request): JsonResponse 
     {
