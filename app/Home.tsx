@@ -89,7 +89,6 @@ export default function Home() {
       return { uri: url }; // Retornar um objeto com a chave uri
     }
   };
-  
 
   const getProducts = async () => {
     try {
@@ -194,7 +193,9 @@ export default function Home() {
                     source={getImageUrl(product.imageURL, 'product')}
                     className="rounded-lg rounded-r-none h-full w-28"
                     onError={(e) => {
-                      console.log('Image load error:', e.nativeEvent.error);
+                      console.log('Erro ao carregar a imagem:', e.nativeEvent.error);
+                      // Atualiza a imagem para fallback diretamente no onError
+                      e.preventDefault();
                     }}
                   />
                 </View>
@@ -228,16 +229,16 @@ export default function Home() {
 
         <Text className="text-neutral-400 text-2xl font-bold mb-4">Categorias</Text>
         <View className="flex-row flex-wrap justify-between">
-        {categories.map((categorie, index) => {
-          const IconComponent = iconMapping[categorie.icon.toLowerCase() as keyof typeof iconMapping]; // Normalizando a chave
+          {categories.map((categorie, index) => {
+            const IconComponent = iconMapping[categorie.icon.toLowerCase() as keyof typeof iconMapping]; // Normalizando a chave
 
-          return (
-            <TouchableOpacity key={categorie.id} className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
-              {IconComponent ? React.createElement(IconComponent, { size: 22, color: "white" }) : defaultIcon}
-              <Text className="text-white text-lg font-bold ml-2">{categorie.name}</Text>
-            </TouchableOpacity>
-          );
-        })}
+            return (
+              <TouchableOpacity key={categorie.id} className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
+                {IconComponent ? React.createElement(IconComponent, { size: 22, color: "white" }) : defaultIcon}
+                <Text className="text-white text-lg font-bold ml-2">{categorie.name}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <Text className="text-neutral-400 text-2xl font-bold mb-4">Lojas perto de você</Text>
@@ -248,10 +249,11 @@ export default function Home() {
                 source={ getImageUrl(store.imageURL, 'store') }
                 className="rounded-full h-32 w-32"
                 onError={(e) => {
-                  console.log('Image load error:', e.nativeEvent.error);
+                  console.log('Erro ao carregar imagem de loja:', e.nativeEvent.error);
+                  // Atualiza a imagem para fallback diretamente no onError
+                  e.preventDefault();
                 }}
-                />
-
+              />
               <Text className="text-white text-lg font-bold mb-2 text-center">{store.name}</Text>
               <View className="flex flex-row w-full items-center justify-center mb-2 text-center">
                 <MapPin size={16} color="white" />
