@@ -41,7 +41,10 @@ class HomeController extends Controller
     public function getCategories(): JsonResponse
     {
         // Fetch 4 random Categories
-        $categories = Category::inRandomOrder()->limit(4)->get();
+        $categories = Category::where('name', '!=', 'Outros') // Prevent not get the 'Others' category
+        ->inRandomOrder()
+        ->limit(4)
+        ->get();
 
         return response()->json([
             'success' => true,
