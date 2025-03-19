@@ -15,12 +15,22 @@ class ViewProductController extends Controller
     public function getProductData(Request $request): JsonResponse
     {
         $productId = $request->input("productId");
-
         $product = Product::with('store')->where('id', $productId)->get();
         $userId = $request->input("userId");
-
-        $reviews = Review::with("user")->where("productId", $productId)->get();
-
+        
+        // First, try to get the review from the current user
+        $userReview = Review::with("user")->where("productId", $productId)->where("userId", $userId)->first();
+        
+        // Then get all other reviews
+        $otherReviews = Review::with("user")->where("productId", $productId)->where("userId", "!=", $userId)->get();
+        
+        // Combine the reviews, putting user's review first if it exists
+        $reviews = collect([]);
+        if ($userReview) {
+            $reviews->push($userReview);
+        }
+        $reviews = $reviews->concat($otherReviews);
+        
         // Transform the data to include only necessary store information
         $transformedProduct = $product->map(function ($product) use ($userId) {
             $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
@@ -39,7 +49,7 @@ class ViewProductController extends Controller
                 'saved' => $isSaved,
             ];
         });
-
+        
         return response()->json([
             'success' => true,
             'product' => $transformedProduct,
