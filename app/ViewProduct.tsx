@@ -144,7 +144,7 @@ export default function ViewProduct() {
               </View>
             <Image 
               source={getImageUrl(item.imageURL, 'product')}
-              className="rounded-t-lg h-64 w-full"
+              className="rounded-t-lg h-96 w-full"
               onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
             />
             <View className="p-4">
