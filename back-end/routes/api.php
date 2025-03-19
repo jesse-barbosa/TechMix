@@ -34,4 +34,6 @@ Route::get('/getSavedProducts', [FavsController::class, 'getSavedProducts']);
 
 Route::get('/getProductData', [ViewProductController::class, 'getProductData']);
 
+Route::post('/addReview', [ViewProductController::class, 'addReview']);
+
 Route::get('/getStoreData', [ViewStoreController::class, 'getStoreData']);

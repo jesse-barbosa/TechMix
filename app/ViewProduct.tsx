@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
-import { Heart, MapPin, ChevronLeft, Frown, Star } from 'lucide-react-native';
+import ReviewModal from '@/app/components/Modals/ReviewModal';
+import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -13,6 +14,7 @@ export default function ViewProduct() {
   const route = useRoute();
   const navigation = useNavigation();
   const { productId } = route.params as { productId: number };
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   type Product = {
     id: number;
@@ -35,7 +37,7 @@ export default function ViewProduct() {
       name: string;
       imageURL: string;
     }
-    message: number;
+    message: string;
     created_at: string;
   }
 
@@ -96,6 +98,21 @@ export default function ViewProduct() {
       console.log('Erro ao favoritar:', error);
     }
   };
+
+  const handleSubmitReview = async (stars: number, message: string) => {
+    try {
+      await axios.post(`${API_URL}/addReview`, {
+        userId: user.id,
+        productId: productId,
+        stars,
+        message,
+      });
+      getProductData();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível enviar a avaliação.");
+      console.log('error: ',error)
+    }
+  };  
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -170,12 +187,24 @@ export default function ViewProduct() {
           ) : (
             <View className="flex w-full p-4 items-center justify-center">
               <View className="w-full bg-neutral-700 rounded-lg p-6 shadow-lg flex items-center">
-                <Frown size={32} color="white" />
+                <PencilOff size={32} color="white" />
                 <Text className="text-neutral-200 text-lg font-bold mt-2">Nenhuma avaliação encontrada.</Text>
               </View>
             </View>
           )}
+        <TouchableOpacity 
+          className="flex flex-row justify-center gap-2 bg-customYellow rounded-lg p-4 m-4 items-center"
+          onPress={() => setIsModalVisible(true)}
+        >
+          <PencilLine size={22} color="#262626" />
+          <Text className="text-neutral-800 text-lg font-extrabold">Escrever Avaliação</Text>
+        </TouchableOpacity>
       </ScrollView>
+      <ReviewModal 
+        visible={isModalVisible} 
+        onClose={() => setIsModalVisible(false)} 
+        onSubmit={handleSubmitReview} 
+      />
     </View>
   );
 }

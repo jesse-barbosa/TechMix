@@ -8,6 +8,7 @@ use App\Models\Review;
 use App\Models\Favorite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ViewProductController extends Controller
 {
@@ -44,5 +45,38 @@ class ViewProductController extends Controller
             'product' => $transformedProduct,
             'reviews' => $reviews,
         ]);
+    }
+    public function addReview(Request $request): JsonResponse
+    {
+        // Validate input data
+        $request->validate([
+            'userId' => 'required|exists:users,id',
+            'productId' => 'required|exists:products,id',
+            'stars' => 'required|integer|min:1|max:5',
+            'message' => 'required|string|max:500',
+        ]);
+        
+        try {
+            // Create new review
+            $review = Review::create([
+                'userId' => $request->input('userId'),
+                'productId' => $request->input('productId'),
+                'stars' => $request->input('stars'),
+                'message' => $request->input('message'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Review added successfully!',
+                'review' => $review,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add review. Please try again.',
+                'data' => $request,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
