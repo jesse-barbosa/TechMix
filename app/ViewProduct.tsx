@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import ReviewModal from '@/app/components/Modals/ReviewModal';
-import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, CheckCheck, Trash2 } from 'lucide-react-native';
+import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, CheckCheck, Trash2, Store } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -22,6 +22,7 @@ export default function ViewProduct() {
     description: string;
     price: string;
     store: {
+      id: number;
       name: string;
       city: string;
     };
@@ -43,6 +44,10 @@ export default function ViewProduct() {
 
   const [product, setProduct] = useState<Product[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+
+  const handleStoreClick = (storeId: number) => {
+    (navigation as any).navigate('ViewStore', { storeId });
+  };
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -229,6 +234,15 @@ export default function ViewProduct() {
             </TouchableOpacity>
           )}
       </ScrollView>
+      <TouchableOpacity className="flex flex-row items-center justify-center gap-4 bg-neutral-900 py-6"
+      onPress={() => handleStoreClick(product[0].store.id)}>
+        <Store size={32} color="#a3a3a3" />
+        <Text className="text-3xl text-neutral-400 font-bold">
+        {product.length > 0 && product[0].store.name ?
+          product[0].store.name
+          : "Loja Desconhecida"}
+        </Text>
+      </TouchableOpacity>
       <ReviewModal 
         visible={isModalVisible} 
         onClose={() => setIsModalVisible(false)} 
