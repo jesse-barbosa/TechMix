@@ -189,7 +189,7 @@ export default function ViewProduct() {
                         <Star key={`empty-${i}`} size={20} color="#A3A3A3" />
                       ))}
                     </View>
-                    <Text className="text-neutral-400 flex-1 max-w-[300] text-sm">{review.message}</Text>
+                    <Text className="text-neutral-400 flex-1 max-w-[260] text-sm">{review.message}</Text>
 
                   </View>
                   {review.user.id === user.id && ( // Render the trash icon if the review is from the logged-in user

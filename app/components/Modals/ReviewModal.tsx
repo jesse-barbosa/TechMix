@@ -35,6 +35,7 @@ export default function ReviewModal({ visible, onClose, onSubmit }: ReviewModalP
             multiline
             value={message}
             onChangeText={setMessage}
+            maxLength={200}
           />
 
           {/* Buttons */}
