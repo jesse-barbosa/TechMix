@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import ReviewModal from '@/app/components/Modals/ReviewModal';
-import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, Trash2 } from 'lucide-react-native';
+import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, CheckCheck, Trash2 } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -211,13 +211,23 @@ export default function ViewProduct() {
               </View>
             </View>
           )}
-        <TouchableOpacity 
-          className="flex flex-row justify-center gap-2 bg-customYellow rounded-lg p-4 m-4 items-center"
-          onPress={() => setIsModalVisible(true)}
-        >
-          <PencilLine size={22} color="#262626" />
-          <Text className="text-neutral-800 text-lg font-extrabold">Escrever Avaliação</Text>
-        </TouchableOpacity>
+        {reviews.some(review => review.user.id === user.id) ? (// Verify if user already reviewed product
+            <TouchableOpacity 
+              className="flex flex-row justify-center gap-2 bg-customYellow rounded-lg p-4 m-4 items-center opacity-70"
+              disabled
+            >
+              <CheckCheck size={22} color="#262626" />
+              <Text className="text-neutral-800 text-lg font-extrabold">Você Já Avaliou Este Produto</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity 
+              className="flex flex-row justify-center gap-2 bg-customYellow rounded-lg p-4 m-4 items-center"
+              onPress={() => setIsModalVisible(true)}
+            >
+              <PencilLine size={22} color="#262626" />
+              <Text className="text-neutral-800 text-lg font-extrabold">Escrever Avaliação</Text>
+            </TouchableOpacity>
+          )}
       </ScrollView>
       <ReviewModal 
         visible={isModalVisible} 
