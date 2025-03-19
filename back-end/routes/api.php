@@ -36,4 +36,6 @@ Route::get('/getProductData', [ViewProductController::class, 'getProductData']);
 
 Route::post('/addReview', [ViewProductController::class, 'addReview']);
 
+Route::post('/deleteReview', [ViewProductController::class, 'deleteReview']);
+
 Route::get('/getStoreData', [ViewStoreController::class, 'getStoreData']);

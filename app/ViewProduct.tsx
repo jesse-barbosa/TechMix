@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import ReviewModal from '@/app/components/Modals/ReviewModal';
-import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine } from 'lucide-react-native';
+import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, Trash2 } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -112,6 +112,16 @@ export default function ViewProduct() {
       Alert.alert("Erro", "Não foi possível enviar a avaliação.");
       console.log('error: ',error)
     }
+  };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    try {
+      const response = await axios.post(`${API_URL}/deleteReview?reviewId=${reviewId}`);
+      getProductData();
+    } catch (error) {
+      console.log('Error deleting review:', error);
+      Alert.alert("Erro", "Não foi possível excluir a avaliação.");
+    }
   };  
 
   return (
@@ -164,23 +174,32 @@ export default function ViewProduct() {
                     className="rounded-full h-16 w-16"
                     onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
                   />
-                <View className="flex flex-col w-full ml-2">
-                  <View className="flex flex-row items-center">
-                    <Text className="text-white text-lg font-bold">{review.user.name}</Text>
-                    <Text className="text-neutral-400 text-md ms-4">
-                      {new Date(review.created_at).toLocaleDateString("en-GB")}
-                    </Text>
+                  <View className="flex flex-col w-full ml-2">
+                    <View className="flex flex-row items-center">
+                      <Text className="text-white text-lg font-bold">{review.user.name}</Text>
+                      <Text className="text-neutral-400 text-md ms-4">
+                        {new Date(review.created_at).toLocaleDateString("en-GB")}
+                      </Text>
+                    </View>
+                    <View className="flex flex-row items-center my-1">
+                      {Array.from({ length: review.stars }).map((_, i) => (
+                        <Star key={`filled-${i}`} size={20} color="#FACC15" fill="#FACC15" />
+                      ))}
+                      {Array.from({ length: 5 - review.stars }).map((_, i) => (
+                        <Star key={`empty-${i}`} size={20} color="#A3A3A3" />
+                      ))}
+                    </View>
+                    <Text className="text-neutral-400 flex-1 max-w-[300] text-sm">{review.message}</Text>
+
                   </View>
-                  <View className="flex flex-row items-center my-1">
-                    {Array.from({ length: review.stars }).map((_, i) => (
-                      <Star key={`filled-${i}`} size={20} color="#FACC15" fill="#FACC15" />
-                    ))}
-                    {Array.from({ length: 5 - review.stars }).map((_, i) => (
-                      <Star key={`empty-${i}`} size={20} color="#A3A3A3" />
-                    ))}
-                  </View>
-                  <Text className="text-neutral-400 flex-1 max-w-[300] text-sm">{review.message}</Text>
-                </View>
+                  {review.user.id === user.id && ( // Render the trash icon if the review is from the logged-in user
+                      <TouchableOpacity 
+                        className="absolute right-4"
+                        onPress={() => handleDeleteReview(review.id)} // Define the delete function
+                      >
+                        <Trash2 size={24} color="#ff5147" />
+                      </TouchableOpacity>
+                    )}
                 </TouchableOpacity>
               ))}
             </ScrollView>

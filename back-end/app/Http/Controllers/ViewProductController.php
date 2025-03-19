@@ -79,4 +79,19 @@ class ViewProductController extends Controller
             ], 500);
         }
     }
+
+    public function deleteReview(Request $request)
+    {
+        $reviewId = $request->input("reviewId");
+        // $userId = auth("")->user()->id;
+
+        $review = Review::where('id', $reviewId)
+        ->first();
+
+        if ($review) {
+            $review->delete();
+            return response()->json(['message' => 'Sua avaliação foi removida com sucesso']);
+        }
+    }
+
 }
