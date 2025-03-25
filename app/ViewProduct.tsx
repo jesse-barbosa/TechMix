@@ -5,7 +5,7 @@ import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
 import ReviewModal from '@/app/components/Modals/ReviewModal';
-import { Heart, MapPin, ChevronLeft, PencilOff, Star, PencilLine, CheckCheck, Trash2, Store } from 'lucide-react-native';
+import { Heart, MapPin, ChevronLeft, ChevronDown, PencilOff, Star, PencilLine, CheckCheck, Trash2, Store } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -44,6 +44,8 @@ export default function ViewProduct() {
 
   const [product, setProduct] = useState<Product[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [visibleReviews, setVisibleReviews] = useState<Review[]>([]);
+  const [reviewsToShow, setReviewsToShow] = useState(3);
 
   const handleStoreClick = (storeId: number) => {
     (navigation as any).navigate('ViewStore', { storeId });
@@ -95,6 +97,10 @@ export default function ViewProduct() {
     getProductData();
   }, [user]);
 
+  useEffect(() => {
+    setVisibleReviews(reviews.slice(0, reviewsToShow));
+  }, [reviews, reviewsToShow]);
+
   const handleFavoriteToggle = async (productId: number) => {
     try {
       const response = await axios.post(`${API_URL}/toggleFavorite?productId=${productId}&userId=${user.id}`);
@@ -117,6 +123,10 @@ export default function ViewProduct() {
       Alert.alert("Erro", "Não foi possível enviar a avaliação.");
       console.log('error: ',error)
     }
+  };
+
+  const handleLoadMore = () => {
+    setReviewsToShow((prev) => prev + 3);
   };
 
   const handleDeleteReview = async (reviewId: number) => {
@@ -172,7 +182,7 @@ export default function ViewProduct() {
         <Text className="text-neutral-400 text-3xl font-bold mb-4 ms-2">Avaliações</Text>
           {reviews.length > 0 ? (
             <ScrollView className="p-3 mb-4">
-              {reviews.map((review, index) => (
+              {visibleReviews.map((review, index) => (
                 <TouchableOpacity key={index} className="flex flex-row w-full items-center bg-neutral-700 rounded-lg p-4 mb-2">
                   <Image 
                     source={getImageUrl(review.user.imageURL, 'user')}
@@ -207,6 +217,12 @@ export default function ViewProduct() {
                     )}
                 </TouchableOpacity>
               ))}
+              {reviews.length > reviewsToShow && (
+                <TouchableOpacity onPress={handleLoadMore} className="flex flex-row items-center justify-center">
+                  <Text className="text-neutral-300 text-xl font-extrabold mr-1">Carregar mais</Text>
+                  <ChevronDown size={30} color="#d4d4d4" />
+                </TouchableOpacity>
+              )}
             </ScrollView>
           ) : (
             <View className="flex w-full p-4 items-center justify-center">
