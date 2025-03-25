@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Heart, MapPin } from 'lucide-react-native';
-import { CircleHelp, Monitor, Laptop, Cpu, Keyboard, HardDrive, Printer, Wifi, Smartphone, Gamepad } from 'lucide-react-native';
+import { CircleHelp, Monitor, Laptop, Cpu, Keyboard, HardDrive, Printer, Wifi, Smartphone, Gamepad, Headphones } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
 import Header from "@/app/components/Header";
@@ -27,6 +27,7 @@ export default function Home() {
     wifi: Wifi,
     smartphone: Smartphone,
     gamepad: Gamepad,
+    headphones: Headphones
   };  
 
   // Defining type for Products
