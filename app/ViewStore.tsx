@@ -37,6 +37,8 @@ export default function ViewProduct() {
   }
 
   const [store, setStore] = useState<Store | null>(null);
+  const [averageRating, setAverageRating] = useState<number | null>(null);
+  const [totalReviews, setTotalReviews] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
 
   const handleProductClick = (productId: number) => {
@@ -75,6 +77,8 @@ export default function ViewProduct() {
       if (response.data.store) {
         setStore(response.data.store);
         setProducts(response.data.products);
+        setAverageRating(response.data.store.averageRating);
+        setTotalReviews(response.data.store.totalReviews); // Salva a quantidade de avaliações
       } else {
         Alert.alert('Erro ao buscar Loja', 'Formato de dados inesperado do servidor.');
       }
@@ -120,20 +124,22 @@ export default function ViewProduct() {
           </View>
 
             <View className="p-4">
-            <Text className="text-white text-3xl text-center mb-3">{store.name}</Text>
+              <Text className="text-white text-3xl text-center mb-3">{store.name}</Text>
 
-            <Text className="text-neutral-400 text-lg text-center">{store.description ? store.description : 'Sem descrição disponível'}</Text>
-            
-            <View className="py-6">
-              <View className="flex-row items-center">
-                  <MapPin size={16} color="white" />
-                  <Text className="text-neutral-300 text-lg pl-3">{store.city}</Text>
-              </View>
-              <View className="flex-row items-center">
+              <Text className="text-neutral-400 text-lg text-center">{store.description ? store.description : 'Sem descrição disponível'}</Text>
+              
+              <View className="py-6">
+                <View className="flex-row items-center">
+                    <MapPin size={16} color="white" />
+                    <Text className="text-neutral-300 text-lg pl-3">{store.city}</Text>
+                </View>
+                <View className="flex-row items-center">
                   <Star size={16} color="white" />
-                  <Text className="text-neutral-300 text-lg pl-3">4.7 Estrelas</Text>
+                  <Text className="text-neutral-300 text-lg pl-3">
+                    {averageRating !== null ? `${averageRating} Estrelas (${totalReviews} avaliações)` : "Sem avaliações"}
+                  </Text>
+                </View>
               </View>
-            </View>
             </View>
         </View>
         )}
