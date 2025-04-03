@@ -39,6 +39,7 @@ export default function Home() {
   };
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
   const [filterVisible, setFilterVisible] = useState(false);
@@ -49,7 +50,18 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
 
-  const handleProductClick = (productId: number) => {
+  const handleProductClick = async (productId: number) => {
+    try {
+      const response = await axios.post(`${API_URL}/setVisitedProduct?userId=${user.id}&productId=${productId}`);
+      if (response.data.success) {
+        (navigation as any).navigate('ViewProduct', { productId });
+      } else {
+        console.log('Erro inesperado:', response.data);
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar produto visitado:', error);
+    }
+
     (navigation as any).navigate('ViewProduct', { productId });
   };
 
@@ -57,6 +69,10 @@ export default function Home() {
     getCategories();
     getHistory();
   }, []);
+
+  useEffect(() => {
+    getVisitedProducts();
+  }, [searchTerm]);
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -79,6 +95,21 @@ export default function Home() {
       search();
     } catch (error) {
       console.log('Erro ao favoritar:', error);
+    }
+  };
+
+  const getVisitedProducts = async () => {
+    if(searchTerm.length > 0) return
+
+    try {
+      const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}`);
+      if (Array.isArray(response.data.visitedProducts)) {
+        setVisitedProducts(response.data.visitedProducts);
+      } else {
+        console.log('Formato inesperado:', response.data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar produtos visitados:', error);
     }
   };
 
@@ -195,7 +226,46 @@ export default function Home() {
           </View>
         )}
       </View>
-      {products.length === 0 ? (
+      {searchTerm.length === 0 && visitedProducts.length > 0 ? (
+        <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
+          <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>
+          {visitedProducts.map((product, index) => (
+            <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
+              <View className="mr-4">
+                <Image
+                  source={getImageUrl(product.imageURL, 'product')}
+                  className="rounded-lg rounded-r-none h-full w-28"
+                  onError={(e) => {
+                    console.log('Image load error:', e.nativeEvent.error);
+                  }}
+                />
+              </View>
+              <View className="flex-1 flex flex-col justify-between py-2">
+                <View>
+                  <Text className="text-white text-lg font-bold max-w-[200px]">
+                    {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
+                  </Text>
+                  <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
+                </View>
+                <View>
+                  <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
+                  <View className="flex-row items-center">
+                    <MapPin size={16} color="white" />
+                    <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
+                {product.saved ? (
+                  <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+                ) : (
+                  <Heart size={24} color="white" />
+                )}
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      ) : products.length === 0 && !visitedProducts ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
             <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
               <ArchiveX size={42} color="#C0C0C0" />

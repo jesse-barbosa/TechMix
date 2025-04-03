@@ -20,6 +20,10 @@ Route::get('/getStores', [HomeController::class, 'getStores']);
 
 Route::get('/getCategories', [HomeController::class, 'getCategories']);
 
+Route::get('/getVisitedProducts', [SearchController::class, 'getVisitedProducts']);
+
+Route::post('/setVisitedProduct', [SearchController::class, 'setVisitedProduct']);
+
 Route::get('/getSearchHistory', [SearchController::class, 'getSearchHistory']);
 
 Route::post('/deleteSearchHistory', [SearchController::class, 'deleteSearchHistory']);
