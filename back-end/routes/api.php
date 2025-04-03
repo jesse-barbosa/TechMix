@@ -24,6 +24,8 @@ Route::get('/getVisitedProducts', [SearchController::class, 'getVisitedProducts'
 
 Route::post('/setVisitedProduct', [SearchController::class, 'setVisitedProduct']);
 
+Route::post('/deleteVisitedProducts', [SearchController::class, 'deleteVisitedProducts']);
+
 Route::get('/getSearchHistory', [SearchController::class, 'getSearchHistory']);
 
 Route::post('/deleteSearchHistory', [SearchController::class, 'deleteSearchHistory']);

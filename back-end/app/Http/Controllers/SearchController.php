@@ -92,6 +92,26 @@ class SearchController extends Controller
         ]);
     }
 
+    public function deleteVisitedProducts(Request $request): JsonResponse
+    {
+        $userId = $request->input("userId");
+    
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User ID are required',
+            ], 400);
+        }
+    
+        $visitedProducts = VisitedProduct::where('userId', $userId)
+            ->delete();
+          
+        return response()->json([
+            'success' => true,
+            'message' => 'Visited procucts deleted sucessfully',
+        ]);
+    }
+
     public function getSearchHistory(Request $request): JsonResponse 
     {
         $userId = $request->input("userId");

@@ -113,6 +113,19 @@ export default function Home() {
     }
   };
 
+  const deleteVisitedProducts = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/deleteVisitedProducts?userId=${user.id}`);
+      if (response.data.success) {
+        setVisitedProducts([]);
+      } else {
+        console.log('Erro inesperado:', response.data);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar histórico de produtos:', error);
+    }
+  }
+
   const getHistory = async () => {
     try {
       const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}&searchTerm=${searchTerm}`);
@@ -228,7 +241,12 @@ export default function Home() {
       </View>
       {searchTerm.length === 0 && visitedProducts.length > 0 ? (
         <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
-          <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>
+          <View className="flex flex-row justify-between">
+            <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>
+            <TouchableOpacity onPress={() => deleteVisitedProducts()}>
+              <X size={26} color="#C0C0C0" className="ms-auto" />
+            </TouchableOpacity>
+          </View>
           {visitedProducts.map((product, index) => (
             <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
               <View className="mr-4">
@@ -265,7 +283,7 @@ export default function Home() {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      ) : products.length === 0 && !visitedProducts ? (
+      ) : products.length === 0 && visitedProducts.length === 0 ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
             <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
               <ArchiveX size={42} color="#C0C0C0" />
