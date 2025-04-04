@@ -38,6 +38,34 @@ class HomeController extends Controller
             'products' => $transformedProducts,
         ]);
     }
+
+    public function getOfficialProducts(Request $request): JsonResponse
+    {
+        // Fetch Products with their associated stores
+        $products = Product::with('store')->where('storeId', '1')->get();
+        $userId = $request->input("userId");
+
+        // Transform the data to include only necessary store information
+        $transformedProducts = $products->map(function ($product) use ($userId) {
+            $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'imageURL' => $product->imageURL,
+                'store' => [
+                    'name' => $product->store->name,
+                    'city' => $product->store->city,
+                ],
+                'saved' => $isSaved,
+            ];
+        });
+        return response()->json([
+            'success' => true,
+            'products' => $transformedProducts,
+        ]);
+    }
+
     public function getCategories(): JsonResponse
     {
         // Fetch 4 random Categories

@@ -65,6 +65,7 @@ export default function Home() {
   }
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [officialProducts, setOfficialProducts] = useState<Product[]>([]);
   const [favsProducts, setFavsProducts] = useState<Product[]>([]);
   const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Categorie[]>([]);
@@ -164,6 +165,30 @@ export default function Home() {
     }
   };
 
+  const getOfficialProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/getOfficialProducts?userId=${user.id}`);
+
+      if (Array.isArray(response.data.products)) {
+        setOfficialProducts(response.data.products);
+      } else {
+        console.error('Expected an array of products, but received:', response.data);
+        Alert.alert('Erro ao buscar Produtos', 'Formato de dados inesperado do servidor.');
+      }
+
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao buscar Produtos', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca de produtos:', error);
+    }
+  };
+
   const getFavsProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/getSavedProducts?userId=${user.id}`);
@@ -239,6 +264,7 @@ export default function Home() {
   useEffect(() => {
     getVisitedProducts();
     getProducts();
+    getOfficialProducts();
     getFavsProducts();
     getCategories();
     getStores();
@@ -500,7 +526,7 @@ export default function Home() {
             </View>
           )}
           {favsProducts.length > 0 && (
-            <View className="mb-8">
+            <View>
               <Text className="text-neutral-400 text-2xl font-bold my-4">Seus Favoritos</Text>
               {/* Horizontal ScrollView for products */}
               <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -543,6 +569,48 @@ export default function Home() {
               </ScrollView>
             </View>
           )}
+          <View className="mb-8">
+            <Text className="text-neutral-400 text-2xl font-bold my-4">Oficiais da TechMix</Text>
+            {/* Horizontal ScrollView for products */}
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+              {officialProducts.map((product, index) => {
+                return (
+                  <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 h-40 rounded-lg mr-4">
+                    <View className="mr-4">
+                      <Image 
+                        source={getImageUrl(product.imageURL, 'product')}
+                        className="rounded-lg rounded-r-none h-full w-28"
+                        onError={(e) => {
+                          console.log('Erro ao carregar a imagem:', e.nativeEvent.error);
+                          // Atualiza a imagem para fallback diretamente no onError
+                          e.preventDefault();
+                        }}
+                      />
+                    </View>
+                    <View className="flex-1 flex flex-col justify-between py-2">
+                      <View>
+                        <Text className="text-white text-lg font-bold max-w-[200px]">
+                          {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
+                        </Text>
+                        <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
+                      </View>
+
+                      <View>
+                        <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
+                        <View className="flex-row items-center">
+                          <MapPin size={16} color="white" />
+                          <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
+                        </View>
+                      </View>
+                    </View>
+                    <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
+                      <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
         </View>
       </ScrollView>
       <Menu />

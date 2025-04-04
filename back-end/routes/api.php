@@ -16,6 +16,8 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/getProducts', [HomeController::class, 'getProducts']);
 
+Route::get('/getOfficialProducts', [HomeController::class, 'getOfficialProducts']);
+
 Route::get('/getStores', [HomeController::class, 'getStores']);
 
 Route::get('/getCategories', [HomeController::class, 'getCategories']);
