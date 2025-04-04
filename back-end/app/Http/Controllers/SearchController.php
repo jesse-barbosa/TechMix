@@ -73,7 +73,9 @@ class SearchController extends Controller
             ->get();
 
         // Transform the data to include only necessary store information
-        $transformedProducts = $visitedProducts->map(function ($product) {
+        $transformedProducts = $visitedProducts->map(function ($product) use ($userId) {
+
+            $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
             return [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -83,6 +85,7 @@ class SearchController extends Controller
                     'name' => $product->store_name,
                     'city' => $product->store_city,
                 ],
+                'saved' => $isSaved,
             ];
         });
 
