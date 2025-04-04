@@ -475,56 +475,6 @@ export default function Home() {
               </TouchableOpacity>
             ))}
           </ScrollView>
-
-          {/* Checks if there are visited products, if not this section has already been displayed */}
-          {visitedProducts.length > 0 && (
-            <View>
-              <Text className="text-neutral-400 text-2xl font-bold my-4">Produtos Em Alta</Text>
-              {/* Horizontal ScrollView for products */}
-              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                {products.map((product, index) => {
-                  return (
-                    <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 h-40 rounded-lg mr-4">
-                      <View className="mr-4">
-                        <Image 
-                          source={getImageUrl(product.imageURL, 'product')}
-                          className="rounded-lg rounded-r-none h-full w-28"
-                          onError={(e) => {
-                            console.log('Erro ao carregar a imagem:', e.nativeEvent.error);
-                            // Atualiza a imagem para fallback diretamente no onError
-                            e.preventDefault();
-                          }}
-                        />
-                      </View>
-                      <View className="flex-1 flex flex-col justify-between py-2">
-                        <View>
-                          <Text className="text-white text-lg font-bold max-w-[200px]">
-                            {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
-                          </Text>
-                          <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
-                        </View>
-    
-                        <View>
-                          <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
-                          <View className="flex-row items-center">
-                            <MapPin size={16} color="white" />
-                            <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
-                          </View>
-                        </View>
-                      </View>
-                      <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
-                        {product.saved ? (
-                          <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
-                        ) : (
-                          <Heart size={24} color="white" />
-                        )}
-                      </TouchableOpacity>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          )}
           {favsProducts.length > 0 && (
             <View>
               <Text className="text-neutral-400 text-2xl font-bold my-4">Seus Favoritos</Text>
