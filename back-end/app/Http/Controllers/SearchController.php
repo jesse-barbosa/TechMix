@@ -152,6 +152,9 @@ class SearchController extends Controller
     {
         $searchTerm = $request->input("search");
         $userId = $request->input("userId");
+        $searchType = $request->input("searchType", "product");
+        $category = $request->input("category");
+        $location = $request->input("location");
     
         if (!$userId || !$searchTerm) {
             return response()->json([
@@ -160,10 +163,36 @@ class SearchController extends Controller
             ], 400);
         }
     
-        // Buscar produtos com base no termo de pesquisa
-        $products = Product::where('name', 'like', '%'. $searchTerm .'%')
-            ->with('store')
-            ->get();
+        // Inicia a query base
+        $query = Product::where('name', 'like', '%'. $searchTerm .'%');
+        
+        // Aplica filtro por categoria se especificado
+        if ($category) {
+            $query->whereHas('category', function($q) use ($category) {
+                $q->where('name', $category);
+            });
+        }
+        
+        // Aplica filtro por localização se especificado
+        if ($location) {
+            $query->where(function($q) use ($location) {
+                $q->where('location', $location)
+                  ->orWhereHas('store', function($sq) use ($location) {
+                      $sq->where('location', $location)
+                         ->orWhere('city', $location);
+                  });
+            });
+        }
+        
+        // Se o tipo de busca for loja, filtra apenas produtos relacionados a essa loja
+        if ($searchType === 'store') {
+            $query->whereHas('store', function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%'. $searchTerm .'%');
+            });
+        }
+        
+        // Obtém os produtos com seus relacionamentos
+        $products = $query->with('store')->get();
     
         // Verifica se já existe um histórico com a mesma mensagem para o usuário
         $existingHistory = SearchHistory::where('userId', $userId)
@@ -214,4 +243,21 @@ class SearchController extends Controller
             'categories' => $categories,
         ]);
     }
+
+    public function getLocations(Request $request): JsonResponse
+    {
+        $searchTerm = $request->input("search");
+    
+        // Buscar produtos com base no termo de pesquisa e pegar cidade da loja
+        $locations = Product::where('products.name', 'like', '%' . $searchTerm . '%')
+            ->leftJoin('stores', 'products.storeId', '=', 'stores.id')
+            ->select('stores.city')
+            ->distinct()
+            ->pluck('city');
+    
+        return response()->json([
+            'success' => true,
+            'locations' => $locations,
+        ]);
+    }    
 }

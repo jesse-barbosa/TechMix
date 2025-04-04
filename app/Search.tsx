@@ -69,6 +69,7 @@ export default function Home() {
 
   useEffect(() => {
     getCategories();
+    getLocations();
     getHistory();
   }, []);
 
@@ -173,13 +174,52 @@ export default function Home() {
     }
   };
 
+  const getLocations = async () => {
+    if (searchTerm.trim() === '') return;
+    try {
+      const response = await axios.get(`${API_URL}/getLocations?search=${searchTerm}`);
+      if (Array.isArray(response.data.locations)) {
+        console.log('Definindo Localizações:', response.data.locations)
+        setLocations(response.data.locations);
+      } else {
+        Alert.alert('Erro ao buscar localizações', 'Formato de dados inesperado do servidor.');
+      }
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao buscar localizações', message);
+        console.error('Erro ao buscar localizações', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+      console.error('Erro durante a busca:', error);
+    }
+  };
+
   const search = async () => {
     if (searchTerm.trim() === '') return;
     try {
-      const response = await axios.post(`${API_URL}/search?search=${searchTerm}&userId=${user.id}`);
+      // Adicionar parâmetros de filtro à requisição
+      const params = new URLSearchParams();
+      params.append('search', searchTerm);
+      params.append('userId', user.id.toString());
+      params.append('searchType', searchType);
+      
+      if (selectedCategory) {
+        params.append('category', selectedCategory);
+      }
+      
+      if (selectedLocation) {
+        params.append('location', selectedLocation);
+      }
+      
+      const response = await axios.post(`${API_URL}/search?${params.toString()}`);
+      
       if (Array.isArray(response.data.products)) {
         setProducts(response.data.products);
-        setShowHistory(false)
+        setShowHistory(false);
       } else {
         Alert.alert('Erro ao realizar pesquisa', 'Formato de dados inesperado do servidor.');
       }
@@ -194,6 +234,11 @@ export default function Home() {
       }
       console.error('Erro durante a busca:', error);
     }
+  };
+
+  const applyFilters = () => {
+    setFilterVisible(false);
+    search(); // Chama a função de pesquisa com os filtros selecionados
   };
 
   return (
@@ -312,7 +357,15 @@ export default function Home() {
                 </TouchableOpacity>
               ))}
             </View>
-            
+            {products.length === 0 && (
+              <View className="flex-1 flex justify-center items-center py-20">
+                <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
+                  <ArchiveX size={42} color="#C0C0C0" />
+                  <Text className="text-neutral-300 text-2xl font-bold mt-2">Nenhum resultado encontrado</Text>
+                  <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
+                </View>
+              </View>
+            )}
             <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
               {products.map((product, index) => (
                 <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
@@ -393,7 +446,6 @@ export default function Home() {
                 style={{
                   color: "#FFF",
                   backgroundColor: "#636363",
-                  borderRadius: 10,
                 }}
               >
                 <Picker.Item label="Geral" value="" />
@@ -402,7 +454,7 @@ export default function Home() {
                 ))}
               </Picker>
             </View>
-            <TouchableOpacity onPress={() => setFilterVisible(false)} className="bg-yellow-500 p-3 mt-4 ">
+            <TouchableOpacity onPress={applyFilters} className="bg-yellow-500 p-3 mt-4 ">
               <Text className="text-center text-neutral-800 font-bold text-lg">Aplicar Filtros</Text>
             </TouchableOpacity>
           </View>
