@@ -7,6 +7,7 @@ import { RootState } from '../store';
 import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
+import ConfirmDeleteModal from "@/app/components/Modals/ConfirmDeleteModal";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {
@@ -42,6 +43,7 @@ export default function Home() {
   const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [locations, setLocations] = useState(['']);
@@ -113,11 +115,12 @@ export default function Home() {
     }
   };
 
-  const deleteVisitedProducts = async () => {
+  const handleDeleteConfirm = async () => {
     try {
       const response = await axios.post(`${API_URL}/deleteVisitedProducts?userId=${user.id}`);
       if (response.data.success) {
         setVisitedProducts([]);
+        setIsDeleteModalVisible(false);
       } else {
         console.log('Erro inesperado:', response.data);
       }
@@ -243,7 +246,7 @@ export default function Home() {
         <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
           <View className="flex flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>
-            <TouchableOpacity onPress={() => deleteVisitedProducts()}>
+            <TouchableOpacity onPress={() => setIsDeleteModalVisible(true)}>
               <X size={26} color="#C0C0C0" className="ms-auto" />
             </TouchableOpacity>
           </View>
@@ -405,6 +408,11 @@ export default function Home() {
           </View>
         </View>
       </Modal>
+      <ConfirmDeleteModal 
+        visible={isDeleteModalVisible} 
+        onClose={() => setIsDeleteModalVisible(false)} 
+        onSubmit={handleDeleteConfirm} 
+      />
     </View>
   );
 }
