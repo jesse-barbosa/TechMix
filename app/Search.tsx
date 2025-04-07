@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
 import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -12,7 +12,10 @@ import { API_URL } from '@/apiConfig';
 
 export default function Home() {
   const navigation = useNavigation();
+  const route = useRoute();
   const user = useSelector((state: RootState) => state.user);
+
+  const { categoryId } = route.params || {};
 
   type Product = {
     id: number;
@@ -51,6 +54,8 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
+  const [initialSearchDone, setInitialSearchDone] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   const handleProductClick = async (productId: number) => {
     try {
@@ -68,10 +73,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getCategories();
-    getLocations();
-    getHistory();
-  }, []);
+    const initialize = async () => {
+      await getCategories();
+      getLocations();
+      getHistory();
+  
+      if (categoryId && !initialSearchDone) {
+        const categoryIdNum = Number(categoryId);
+        setSelectedCategoryId(categoryIdNum);
+        
+        const category = categories.find(cat => cat.id === categoryIdNum);
+        if (category) {
+          setSelectedCategory(category.name);
+          await search();
+          setInitialSearchDone(true);
+        }
+      }
+    };
+  
+    initialize();
+  }, [categoryId, categories]);
 
   useEffect(() => {
     getVisitedProducts();
@@ -199,15 +220,27 @@ export default function Home() {
   };
 
   const search = async () => {
-    if (searchTerm.trim() === '') return;
     try {
-      // Adicionar parâmetros de filtro à requisição
+      // Se temos um categoryId mas ainda não temos a selectedCategory definida
+      if (categoryId && !selectedCategory && categories.length > 0) {
+        const category = categories.find(cat => cat.id === Number(categoryId));
+        if (category) {
+          setSelectedCategory(category.name);
+        }
+      }
+  
       const params = new URLSearchParams();
       params.append('search', searchTerm);
       params.append('userId', user.id.toString());
       params.append('searchType', searchType);
       
-      if (selectedCategory) {
+      // Usa o categoryId se existir, caso contrário usa selectedCategory
+      if (categoryId && categories.length > 0) {
+        const category = categories.find(cat => cat.id === Number(categoryId));
+        if (category) {
+          params.append('category', category.name);
+        }
+      } else if (selectedCategory) {
         params.append('category', selectedCategory);
       }
       
@@ -287,7 +320,7 @@ export default function Home() {
           </View>
         )}
       </View>
-      {searchTerm.length === 0 && visitedProducts.length > 0 ? (
+      {searchTerm.length === 0 && visitedProducts.length > 0 && !categoryId ? (
         <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
           <View className="flex flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>

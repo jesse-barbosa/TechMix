@@ -447,7 +447,11 @@ export default function Home() {
               const IconComponent = iconMapping[categorie.icon.toLowerCase() as keyof typeof iconMapping]; // Normalizando a chave
 
               return (
-                <TouchableOpacity key={categorie.id} className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4">
+                <TouchableOpacity 
+                key={categorie.id} 
+                className="flex flex-row w-[48%] bg-neutral-700 rounded-lg p-4 mb-4"
+                onPress={() => navigation.navigate('Search', { categoryId: categorie.id })}
+                >
                   {IconComponent ? React.createElement(IconComponent, { size: 22, color: "white" }) : defaultIcon}
                   <Text className="text-white text-lg font-bold ml-2">{categorie.name}</Text>
                 </TouchableOpacity>
