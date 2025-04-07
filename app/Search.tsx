@@ -17,6 +17,14 @@ export default function Home() {
 
   const { categoryId } = route.params || {};
 
+  type Store = {
+    id: number;
+    imageURL: string;
+    name: string;
+    description: string;
+    city: string;
+  }
+
   type Product = {
     id: number;
     name: string;
@@ -42,6 +50,7 @@ export default function Home() {
     'store': ['Lojas'],
   };
 
+  const [stores, setStores] = useState<Store[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,6 +65,10 @@ export default function Home() {
   const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
   const [initialSearchDone, setInitialSearchDone] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+
+  const handleStoreClick = async (storeId: number) => {
+    (navigation as any).navigate('ViewStore', { storeId });
+  }
 
   const handleProductClick = async (productId: number) => {
     try {
@@ -250,11 +263,22 @@ export default function Home() {
       
       const response = await axios.post(`${API_URL}/search?${params.toString()}`);
       
-      if (Array.isArray(response.data.products)) {
-        setProducts(response.data.products);
-        setShowHistory(false);
+      if(searchType === 'store') {
+        if (Array.isArray(response.data.stores)) {
+          setStores(response.data.stores);
+          setShowHistory(false);
+        } else {
+          Alert.alert('Erro ao buscar lojas', 'Formato de dados inesperado do servidor.');
+          console.log('response:', response.data);
+        }
       } else {
-        Alert.alert('Erro ao realizar pesquisa', 'Formato de dados inesperado do servidor.');
+        if (Array.isArray(response.data.products)) {
+          setProducts(response.data.products);
+          setShowHistory(false);
+        } else {
+          Alert.alert('Erro ao buscar produtos', 'Formato de dados inesperado do servidor.');
+          console.log('response:', response.data);
+        }
       }
     } catch (error: any) {
       if (error.response) {
@@ -372,72 +396,137 @@ export default function Home() {
               <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
             </View>
           </View>
-        ) : (
+        ) : stores.length > 0 ? (
           <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
-            <View className="flex-row justify-between">
-              <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
-              <TouchableOpacity onPress={() => setFilterVisible(true)}>
-                <SlidersHorizontal size={24} color="#C0C0C0" />
+          <View className="flex-row justify-between">
+            <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ stores.length }</Text> Resultados Encontrados</Text>
+            <TouchableOpacity onPress={() => setFilterVisible(true)}>
+              <SlidersHorizontal size={24} color="#C0C0C0" />
+            </TouchableOpacity>
+          </View>
+          <View className="flex-row gap-2 py-4">
+            {Object.entries(searchTypes).map(([key, value]) => (
+              <TouchableOpacity
+                key={key}
+                className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
+                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
               </TouchableOpacity>
+            ))}
+          </View>
+          {stores.length === 0 && (
+            <View className="flex-1 flex justify-center items-center py-20">
+              <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
+                <ArchiveX size={42} color="#C0C0C0" />
+                <Text className="text-neutral-300 text-2xl font-bold mt-2">Nenhum resultado encontrado</Text>
+                <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
+              </View>
             </View>
-            <View className="flex-row gap-2 py-4">
-              {Object.entries(searchTypes).map(([key, value]) => (
-                <TouchableOpacity
-                  key={key}
-                  className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                  onPress={() => setSearchType(key as keyof typeof searchTypes)}>
-                  <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {products.length === 0 && (
-              <View className="flex-1 flex justify-center items-center py-20">
-                <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
-                  <ArchiveX size={42} color="#C0C0C0" />
-                  <Text className="text-neutral-300 text-2xl font-bold mt-2">Nenhum resultado encontrado</Text>
-                  <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
+          )}
+          <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
+          {stores.map((store, index) => (
+            <TouchableOpacity key={index} onPress={() => handleStoreClick(store.id)} className="flex flex-row bg-neutral-700 rounded-lg mb-2 h-36">
+              <View className="mr-2">
+                <Image
+                  source={getImageUrl(store.imageURL, 'store')}
+                  className="rounded-lg rounded-r-none h-full w-32"
+                  onError={(e) => {
+                    console.log('Image load error:', e.nativeEvent.error);
+                  }}
+                />
+              </View>
+              <View className="flex flex-col items-start justify-between py-4 px-2">
+                <Text className="text-white text-2xl font-bold">{store.name}</Text>
+                {store.description ? (
+                  <View className="w-10/12">
+                    <Text 
+                      className="text-neutral-400 text-md" 
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {(store.description && store.description.length > 86) 
+                        ? store.description.substring(0, 86) + '...'
+                        : (store.description)}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-neutral-400 text-md">Sem descrição.</Text>
+                )}
+                <View className="flex-row items-center mt-1">
+                  <MapPin size={16} color="white" />
+                  <Text className="text-neutral-400 pl-1">{store.city}</Text>
                 </View>
               </View>
-            )}
-            <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
-              {products.map((product, index) => (
-                <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
-                  <View className="mr-4">
-                    <Image
-                      source={getImageUrl(product.imageURL, 'product')}
-                      className="rounded-lg rounded-r-none h-full w-28"
-                      onError={(e) => {
-                        console.log('Image load error:', e.nativeEvent.error);
-                      }}
-                    />
-                  </View>
-                  <View className="flex-1 flex flex-col justify-between py-2">
-                    <View>
-                      <Text className="text-white text-lg font-bold max-w-[200px]">
-                        {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
-                      </Text>
-                      <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
-                    </View>
-                    <View>
-                      <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
-                      <View className="flex-row items-center">
-                        <MapPin size={16} color="white" />
-                        <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
-                    {product.saved ? (
-                      <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
-                    ) : (
-                      <Heart size={24} color="white" />
-                    )}
-                  </TouchableOpacity>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            </TouchableOpacity>
+          ))}
           </ScrollView>
-        )}
+        </ScrollView>
+        ) : (
+        <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
+          <View className="flex-row justify-between">
+            <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
+            <TouchableOpacity onPress={() => setFilterVisible(true)}>
+              <SlidersHorizontal size={24} color="#C0C0C0" />
+            </TouchableOpacity>
+          </View>
+          <View className="flex-row gap-2 py-4">
+            {Object.entries(searchTypes).map(([key, value]) => (
+              <TouchableOpacity
+                key={key}
+                className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
+                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {products.length === 0 && (
+            <View className="flex-1 flex justify-center items-center py-20">
+              <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
+                <ArchiveX size={42} color="#C0C0C0" />
+                <Text className="text-neutral-300 text-2xl font-bold mt-2">Nenhum resultado encontrado</Text>
+                <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
+              </View>
+            </View>
+          )}
+          <ScrollView showsHorizontalScrollIndicator={true} style={{ marginBottom: 20 }}>
+            {products.map((product, index) => (
+              <TouchableOpacity key={index} onPress={() => handleProductClick(product.id)} className="flex-row bg-neutral-700 rounded-lg my-2 h-36">
+                <View className="mr-4">
+                  <Image
+                    source={getImageUrl(product.imageURL, 'product')}
+                    className="rounded-lg rounded-r-none h-full w-28"
+                    onError={(e) => {
+                      console.log('Image load error:', e.nativeEvent.error);
+                    }}
+                  />
+                </View>
+                <View className="flex-1 flex flex-col justify-between py-2">
+                  <View>
+                    <Text className="text-white text-lg font-bold max-w-[200px]">
+                      {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
+                    </Text>
+                    <Text className="text-neutral-200 text-2xl">R$ {product.price}</Text>
+                  </View>
+                  <View>
+                    <Text className="text-neutral-400 mt-6">{product.store.name}</Text>
+                    <View className="flex-row items-center">
+                      <MapPin size={16} color="white" />
+                      <Text className="text-neutral-400 pl-1">{product.store.city}</Text>
+                    </View>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => handleFavoriteToggle(product.id)} className="flex items-end justify-end p-2 rounded-lg mt-2">
+                  {product.saved ? (
+                    <Heart size={24} color="yellow" fill={'yellow'} className="text-yellow-500" />
+                  ) : (
+                    <Heart size={24} color="white" />
+                  )}
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </ScrollView>
+      )}
       <Menu />
       <Modal
         animationType="fade"

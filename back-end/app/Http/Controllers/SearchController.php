@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Models\Store;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\VisitedProduct;
@@ -163,24 +164,42 @@ class SearchController extends Controller
             ], 400);
         }
     
-        // Inicia a query base
-        $query = Product::query(); // Start with an empty query
+        // Busca por loja
+        if ($searchType === 'store') {
+            $query = Store::query();
     
-        // Aplica filtro por termo de busca se fornecido
+            if ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            }
+    
+            if ($location) {
+                $query->where(function ($q) use ($location) {
+                    $q->where('location', $location)
+                      ->orWhere('city', $location);
+                });
+            }
+    
+            $stores = $query->get();
+    
+            return response()->json([
+                'success' => true,
+                'stores' => $stores,
+            ]);
+        }
+    
+        // Busca por produto
+        $query = Product::query();
+    
         if ($searchTerm) {
-            $query->where('name', 'like', '%'. $searchTerm .'%');
-            
-            // Adiciona ao histórico de busca apenas se houver um termo
-            // Verifica se já existe um histórico com a mesma mensagem para o usuário
+            $query->where('name', 'like', '%' . $searchTerm . '%');
+    
             $existingHistory = SearchHistory::where('userId', $userId)
                 ->where('searchMessage', $searchTerm)
                 ->first();
-                
+    
             if ($existingHistory) {
-                // Apenas atualiza o updated_at para trazer para o topo na exibição
                 $existingHistory->touch();
             } else {
-                // Cria um novo histórico caso não exista
                 SearchHistory::create([
                     'userId' => $userId,
                     'searchMessage' => $searchTerm,
@@ -188,35 +207,24 @@ class SearchController extends Controller
             }
         }
     
-        // Aplica filtro por categoria se especificado
         if ($category) {
             $query->whereHas('category', function($q) use ($category) {
                 $q->where('name', $category);
             });
         }
     
-        // Aplica filtro por localização se especificado
         if ($location) {
             $query->where(function($q) use ($location) {
                 $q->where('location', $location)
-                    ->orWhereHas('store', function($sq) use ($location) {
-                        $sq->where('location', $location)
-                            ->orWhere('city', $location);
-                    });
+                  ->orWhereHas('store', function($sq) use ($location) {
+                      $sq->where('location', $location)
+                         ->orWhere('city', $location);
+                  });
             });
         }
     
-        // Se o tipo de busca for loja, filtra apenas produtos relacionados a essa loja
-        if ($searchType === 'store' && $searchTerm) {
-            $query->whereHas('store', function($q) use ($searchTerm) {
-                $q->where('name', 'like', '%'. $searchTerm .'%');
-            });
-        }
-    
-        // Obtém os produtos com seus relacionamentos
         $products = $query->with('store')->get();
     
-        // Transformar os produtos para incluir apenas as informações necessárias
         $transformedProducts = $products->map(function ($product) use ($userId) {
             $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
             return [
