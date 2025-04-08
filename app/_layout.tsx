@@ -8,6 +8,7 @@ import RegisterScreen from './Register';
 import HomeScreen from './Home';
 import SearchScreen from './Search';
 import FavsScreen from './Favs';
+import ChatsScreen from './Chats';
 import UserScreen from './Settings';
 import ViewProductScreen from './ViewProduct';
 import ViewStoreScreen from './ViewStore';
@@ -23,6 +24,7 @@ function App() {
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="Favs" component={FavsScreen} options={{ headerShown: false, animation: 'none' }} />
+        <Stack.Screen name="Chats" component={ChatsScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="User" component={UserScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="ViewProduct" component={ViewProductScreen} options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="ViewStore" component={ViewStoreScreen} options={{ headerShown: false, animation: 'none' }} />

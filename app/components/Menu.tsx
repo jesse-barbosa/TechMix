@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Home, Search, Bookmark, User2 } from 'lucide-react-native';
+import { Home, Search, Bookmark, MessagesSquare, User2 } from 'lucide-react-native';
 
 const Menu = () => {
   const navigation = useNavigation();
@@ -21,6 +21,9 @@ const Menu = () => {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('Favs')}>
         <Bookmark size={32} color={isActive('Favs') ? '#fff' : '#C0C0C0'} fill={isActive('Favs') ? '#292929' : 'none'} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => (navigation as any).navigate('Chats')}>
+        <MessagesSquare size={32} color={isActive('Chats') ? '#fff' : '#C0C0C0'} fill={isActive('Chats') ? '#292929' : 'none'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => (navigation as any).navigate('User')}>
         <User2 size={32} color={isActive('User') ? '#fff' : '#C0C0C0'} fill={isActive('User') ? '#292929' : 'none'} />
