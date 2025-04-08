@@ -23,7 +23,7 @@ export default function Home() {
   const [stores, setStores] = useState<Store[]>([]);
 
   const handleStoreClick = (storeId: number) => {
-    (navigation as any).navigate('ViewStore', { storeId });
+    (navigation as any).navigate('ViewChat', { storeId });
   };
 
   const getImageUrl = (imageURL: string | number | undefined, type: string) => {
