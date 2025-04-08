@@ -21,6 +21,7 @@ export default function Home() {
       imageURL: string;
     };
     lastMessage: string;
+    senderType: 'user' | 'store';
   }
 
   const [chats, setChats] = useState<Chat[]>([]);
@@ -99,6 +100,7 @@ export default function Home() {
               <Text 
                 className="text-neutral-400 text-md font-normal text-start"
                 numberOfLines={2}>
+                  <Text className="text-neutral-200 font-semibold">{chat.senderType === 'store' ? 'Você: ' : 'Loja: '}</Text>
                   {chat.lastMessage}
               </Text>
             </View>
