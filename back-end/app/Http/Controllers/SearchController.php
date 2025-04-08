@@ -172,11 +172,9 @@ class SearchController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%');
             }
     
+            // filter by location
             if ($location) {
-                $query->where(function ($q) use ($location) {
-                    $q->where('location', $location)
-                      ->orWhere('city', $location);
-                });
+                $query->where('city', $location);
             }
     
             $stores = $query->get();
@@ -207,19 +205,17 @@ class SearchController extends Controller
             }
         }
     
+        // filter by category
         if ($category) {
             $query->whereHas('category', function($q) use ($category) {
                 $q->where('name', $category);
             });
         }
-    
+
+        // filter by location
         if ($location) {
-            $query->where(function($q) use ($location) {
-                $q->where('location', $location)
-                  ->orWhereHas('store', function($sq) use ($location) {
-                      $sq->where('location', $location)
-                         ->orWhere('city', $location);
-                  });
+            $query->whereHas('store', function($sq) use ($location) {
+                $sq->where('city', $location);
             });
         }
     
