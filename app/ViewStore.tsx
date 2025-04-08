@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
-import { ChevronLeft, Flag, MapPin, Star, ArchiveX, Heart } from 'lucide-react-native';
+import { ChevronLeft, MessagesSquare, MapPin, Star, ArchiveX, Heart } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';
 
@@ -111,7 +111,7 @@ export default function ViewProduct() {
               <Text className="text-neutral-200 font-semibold text-3xl">{store.name}</Text>
 
               <TouchableOpacity className="flex items-end">
-                  <Flag size={24} color="white" />
+                  <MessagesSquare size={24} color="white" />
               </TouchableOpacity>
             </View>
 
