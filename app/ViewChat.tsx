@@ -53,11 +53,11 @@ export default function Home() {
     return { uri: url };
   };
 
-  const getStoreData = async () => {
+  const getChatData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/getStoreData?userId=${user.id}`);
-      if (response.data.storeData) {
-        setStore(response.data.storeData);
+      const response = await axios.get(`${API_URL}/getChatData?chatId=${chatId}`);
+      if (response.data.store) {
+        setStore(response.data.store);
       }
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível carregar os dados da loja.');
@@ -96,17 +96,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getStoreData();
+    getChatData();
     fetchMessages();
   }, []);
 
   return (
     <View className="flex-1 bg-neutral-800">
-      <View className="flex flex-row items-center justify-between px-2 py-1">
+      <View className="component flex flex-row items-center justify-between px-2 py-4">
         <View className="flex flex-row items-center">
           <ChevronLeft size={32} color="#C0C0C0" onPress={() => (navigation as any).goBack()} />
           <Image source={getImageUrl(store?.imageURL, 'store')} className="rounded-full h-14 w-14 ms-2" />
-          <Text className="text-neutral-400 text-3xl font-bold mx-3">{store?.name}</Text>
+          <Text className="text-neutral-200 text-3xl font-medium mx-3">{store?.name}</Text>
         </View>
         <Flag size={24} color="#C0C0C0" />
       </View>
@@ -137,9 +137,9 @@ export default function Home() {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={80}
-        className="flex flex-row items-center justify-between px-2 py-2"
+        className="component flex flex-row items-center justify-between px-2 py-4"
       >
-        <View className="bg-neutral-700 flex-row items-center p-3 rounded-lg flex-1 mr-2">
+        <View className="border border-neutral-700 flex-row items-center p-2 rounded-lg flex-1 mr-2">
           <TextInput
             placeholder="Digite uma mensagem..."
             placeholderTextColor="#D1D5DB"
