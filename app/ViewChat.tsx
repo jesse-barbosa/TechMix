@@ -9,7 +9,7 @@ import { API_URL } from '@/apiConfig';
 
 export default function Home() {
   const route = useRoute();
-  const { storeId } = route.params as { storeId: number };
+  const { chatId } = route.params as { chatId: number };
   const navigation = useNavigation();
   const user = useSelector((state: RootState) => state.user);
 
@@ -67,7 +67,7 @@ export default function Home() {
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`${API_URL}/messages?storeId=${storeId}&userId=${user.id}`);
+      const res = await axios.get(`${API_URL}/getMessages?chatId=${chatId}`);
       setMessages(res.data.messages);
     } catch (error) {
       console.error('Erro ao buscar mensagens:', error);
@@ -79,7 +79,7 @@ export default function Home() {
 
     try {
       const res = await axios.post(`${API_URL}/sendMessage`, {
-        storeId,
+        chatId,
         userId: user.id,
         message: newMessage,
       });
