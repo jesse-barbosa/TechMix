@@ -44,4 +44,31 @@ class ViewChatController extends Controller
             'messages' => $messages,
         ]);
     }
+
+    public function sendMessage(Request $request): JsonResponse
+    {
+        // Validate input data
+        $request->validate([
+            'chatId' => 'required|exists:chats,id',
+            'userId' => 'required|exists:users,id',
+            'message' => 'required|string|max:500',
+        ]);
+
+        $chatId = $request->input('chatId');
+        $userId = $request->input('userId');
+        $message = $request->input('message');
+    
+        // Enviar mensagem
+        $message = Message::create([
+            'chatId' => $chatId,
+            'senderId' => $userId,
+            'senderType' => 'user',
+            'message' => $message,
+        ]);
+    
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+        ]);
+    }
 }

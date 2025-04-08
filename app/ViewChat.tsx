@@ -98,17 +98,17 @@ export default function Home() {
   useEffect(() => {
     getChatData();
     fetchMessages();
-  }, []);
+  }, [store, messages]);
 
   return (
     <View className="flex-1 bg-neutral-800">
-      <View className="component flex flex-row items-center justify-between px-2 py-4">
+      <View className="component flex flex-row items-center justify-between ps-2 pe-4 py-4">
         <View className="flex flex-row items-center">
           <ChevronLeft size={32} color="#C0C0C0" onPress={() => (navigation as any).goBack()} />
           <Image source={getImageUrl(store?.imageURL, 'store')} className="rounded-full h-14 w-14 ms-2" />
           <Text className="text-neutral-200 text-3xl font-medium mx-3">{store?.name}</Text>
         </View>
-        <Flag size={24} color="#C0C0C0" />
+        <Flag size={22} color="#C0C0C0" />
       </View>
 
       {/* Mensagens */}
