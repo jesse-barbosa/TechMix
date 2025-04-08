@@ -420,11 +420,14 @@ export default function Home() {
             <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ stores.length }</Text> Resultados Encontrados</Text>
             <TouchableOpacity onPress={() => setFilterVisible(true)}>
               {selectedCategory || selectedLocation ? (
-                <View className="p-1 bg-customYellow">
+                <View className="p-1 bg-yellow-500 rounded">
                   <SlidersHorizontal size={24} color="#4A5568" />
                 </View>
               ) : (
-                <SlidersHorizontal size={24} color="#C0C0C0" />
+                <View className="p-1">
+                  <SlidersHorizontal size={24} color="#C0C0C0" />
+                </View>
+
               )}
             </TouchableOpacity>
           </View>
@@ -498,7 +501,9 @@ export default function Home() {
                   <SlidersHorizontal size={24} color="#4A5568" />
                 </View>
               ) : (
-                <SlidersHorizontal size={24} color="#C0C0C0" />
+                <View className="p-1">
+                  <SlidersHorizontal size={24} color="#C0C0C0" />
+                </View>
               )}
             </TouchableOpacity>
           </View>
