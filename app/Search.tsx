@@ -419,7 +419,13 @@ export default function Home() {
           <View className="flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ stores.length }</Text> Resultados Encontrados</Text>
             <TouchableOpacity onPress={() => setFilterVisible(true)}>
-              <SlidersHorizontal size={24} color="#C0C0C0" />
+              {selectedCategory || selectedLocation ? (
+                <View className="p-1 bg-customYellow">
+                  <SlidersHorizontal size={24} color="#4A5568" />
+                </View>
+              ) : (
+                <SlidersHorizontal size={24} color="#C0C0C0" />
+              )}
             </TouchableOpacity>
           </View>
           <View className="flex-row gap-2 py-4">
@@ -487,7 +493,13 @@ export default function Home() {
           <View className="flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
             <TouchableOpacity onPress={() => setFilterVisible(true)}>
-              <SlidersHorizontal size={24} color="#C0C0C0" />
+            {selectedCategory || selectedLocation ? (
+                <View className="p-1 bg-yellow-500 rounded">
+                  <SlidersHorizontal size={24} color="#4A5568" />
+                </View>
+              ) : (
+                <SlidersHorizontal size={24} color="#C0C0C0" />
+              )}
             </TouchableOpacity>
           </View>
           <View className="flex-row gap-2 py-4">
