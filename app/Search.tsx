@@ -14,7 +14,7 @@ export default function Home() {
   const navigation = useNavigation();
   const route = useRoute();
   const user = useSelector((state: RootState) => state.user);
-
+  
   const { categoryId } = route.params || {};
 
   type Store = {
@@ -54,6 +54,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
@@ -65,6 +66,26 @@ export default function Home() {
   const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
   const [initialSearchDone, setInitialSearchDone] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm.trim() !== '') {
+      getLocations();
+    }
+    
+    if (debouncedSearchTerm.length === 0) {
+      getVisitedProducts();
+    }
+  }, [debouncedSearchTerm]);
 
   const handleStoreClick = async (storeId: number) => {
     (navigation as any).navigate('ViewStore', { storeId });
@@ -88,7 +109,6 @@ export default function Home() {
   useEffect(() => {
     const initialize = async () => {
       await getCategories();
-      getLocations();
       getHistory();
   
       if (categoryId && !initialSearchDone) {
@@ -108,8 +128,10 @@ export default function Home() {
   }, [categoryId, categories]);
 
   useEffect(() => {
-    getVisitedProducts();
-  }, [searchTerm]);
+    if (initialSearchDone) {
+      search();
+    }
+  }, [searchType]);
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
@@ -136,8 +158,6 @@ export default function Home() {
   };
 
   const getVisitedProducts = async () => {
-    if(searchTerm.length > 0) return
-
     try {
       const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}`);
       if (Array.isArray(response.data.visitedProducts)) {
@@ -166,7 +186,8 @@ export default function Home() {
 
   const getHistory = async () => {
     try {
-      const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}&searchTerm=${searchTerm}`);
+      // Use debouncedSearchTerm instead of searchTerm for stability
+      const response = await axios.get(`${API_URL}/getSearchHistory?userId=${user.id}&searchTerm=${debouncedSearchTerm}`);
       if (Array.isArray(response.data.searchHistory)) {
         setSearchHistory(response.data.searchHistory);
       } else {
@@ -209,9 +230,8 @@ export default function Home() {
   };
 
   const getLocations = async () => {
-    if (searchTerm.trim() === '') return;
     try {
-      const response = await axios.get(`${API_URL}/getLocations?search=${searchTerm}`);
+      const response = await axios.get(`${API_URL}/getLocations?search=${debouncedSearchTerm}`);
       if (Array.isArray(response.data.locations)) {
         console.log('Definindo Localizações:', response.data.locations)
         setLocations(response.data.locations);
@@ -234,7 +254,6 @@ export default function Home() {
 
   const search = async () => {
     try {
-      // Se temos um categoryId mas ainda não temos a selectedCategory definida
       if (categoryId && !selectedCategory && categories.length > 0) {
         const category = categories.find(cat => cat.id === Number(categoryId));
         if (category) {
@@ -247,7 +266,6 @@ export default function Home() {
       params.append('userId', user.id.toString());
       params.append('searchType', searchType);
       
-      // Usa o categoryId se existir, caso contrário usa selectedCategory
       if (categoryId && categories.length > 0) {
         const category = categories.find(cat => cat.id === Number(categoryId));
         if (category) {
@@ -295,7 +313,7 @@ export default function Home() {
 
   const applyFilters = () => {
     setFilterVisible(false);
-    search(); // Chama a função de pesquisa com os filtros selecionados
+    search();
   };
 
   return (
@@ -409,7 +427,10 @@ export default function Home() {
               <TouchableOpacity
                 key={key}
                 className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                onPress={async () => {
+                  await setSearchType(key as keyof typeof searchTypes);
+                  search();
+                }}>
                 <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
               </TouchableOpacity>
             ))}
@@ -474,7 +495,10 @@ export default function Home() {
               <TouchableOpacity
                 key={key}
                 className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                onPress={() => setSearchType(key as keyof typeof searchTypes)}>
+                onPress={async () => {
+                  await setSearchType(key as keyof typeof searchTypes);
+                  search();
+                }}>
                 <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
               </TouchableOpacity>
             ))}
