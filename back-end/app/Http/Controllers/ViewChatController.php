@@ -30,5 +30,18 @@ class ViewChatController extends Controller
             'success' => true,
             'store' => $store,
         ]);
-    }   
+    }
+    
+    public function getMessages(Request $request): JsonResponse
+    {
+        $chatId = $request->input("chatId");
+    
+        // Buscar mensagens
+        $messages = Message::where('chatId', $chatId)->get();
+    
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+    }
 }

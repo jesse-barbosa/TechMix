@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Mensagens */}
       <ScrollView
-        className="px-3 mb-2"
+        className="px-3 my-2"
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
       >
@@ -122,7 +122,7 @@ export default function Home() {
           return (
             <View
               key={index}
-              className={`my-2 p-3 rounded-lg max-w-[80%] ${isUser ? 'bg-yellow-500 self-end' : 'bg-neutral-700 self-start'}`}
+              className={`my-3 p-3 rounded-lg max-w-[80%] ${isUser ? 'bg-yellow-500 self-end' : 'bg-neutral-700 self-start'}`}
             >
               <Text className={`text-base ${isUser ? 'text-black' : 'text-white'}`}>{msg.message}</Text>
               <Text className={`text-xs mt-1 ${isUser ? 'text-neutral-800' : 'text-neutral-400'}`}>

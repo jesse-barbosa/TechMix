@@ -26,6 +26,8 @@ Route::get('/getChats', [ChatsController::class, 'getChats']);
 
 Route::get('/getChatData', [ViewChatController::class, 'getChatData']);
 
+Route::get('/getMessages', [ViewChatController::class, 'getMessages']);
+
 Route::get('/getCategories', [HomeController::class, 'getCategories']);
 
 Route::get('/getVisitedProducts', [SearchController::class, 'getVisitedProducts']);
