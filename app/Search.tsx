@@ -362,6 +362,7 @@ export default function Home() {
           </View>
         )}
       </View>
+
       {searchTerm.length === 0 && visitedProducts.length > 0 && !categoryId ? (
         <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
           <View className="flex flex-row justify-between">
@@ -414,7 +415,7 @@ export default function Home() {
               <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
             </View>
           </View>
-        ) : stores.length > 0 ? (
+        ) : searchType === 'store' ? (
           <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
           <View className="flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ stores.length }</Text> Resultados Encontrados</Text>
