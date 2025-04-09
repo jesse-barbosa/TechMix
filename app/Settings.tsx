@@ -34,7 +34,9 @@ export default function Home() {
           <ChevronRight size={24} color="#FFF" />
         </TouchableOpacity>
 
-        <TouchableOpacity className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-4 flex-row items-center justify-between">
+        <TouchableOpacity 
+        className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-4 flex-row items-center justify-between"
+        onPress={() => (navigation as any).navigate('ViewProfile')}>
         <View className="flex-row items-center">
           <User size={26} color="#e5e5e5" />
           <Text className="text-neutral-200 text-2xl font-semibold ml-3">Minha Conta</Text>

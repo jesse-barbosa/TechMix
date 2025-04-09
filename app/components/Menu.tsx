@@ -25,8 +25,8 @@ const Menu = () => {
       <TouchableOpacity onPress={() => (navigation as any).navigate('Chats')}>
         <MessagesSquare size={32} color={isActive('Chats') ? '#fff' : '#C0C0C0'} fill={isActive('Chats') ? '#292929' : 'none'} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => (navigation as any).navigate('User')}>
-        <User2 size={32} color={isActive('User') ? '#fff' : '#C0C0C0'} fill={isActive('User') ? '#292929' : 'none'} />
+      <TouchableOpacity onPress={() => (navigation as any).navigate('Settings')}>
+        <User2 size={32} color={isActive('Settings') ? '#fff' : '#C0C0C0'} fill={isActive('Settings') ? '#292929' : 'none'} />
       </TouchableOpacity>
     </View>
   );

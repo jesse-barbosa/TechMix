@@ -11,6 +11,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FavsController;
 use App\Http\Controllers\ViewProductController;
 use App\Http\Controllers\ViewStoreController;
+use App\Http\Controllers\ProfileController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -63,3 +64,5 @@ Route::post('/addReview', [ViewProductController::class, 'addReview']);
 Route::post('/deleteReview', [ViewProductController::class, 'deleteReview']);
 
 Route::get('/getStoreData', [ViewStoreController::class, 'getStoreData']);
+
+Route::post('/updateProfile', [ProfileController::class, 'updateProfile']);
