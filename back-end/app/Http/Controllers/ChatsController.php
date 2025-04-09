@@ -28,8 +28,8 @@ class ChatsController extends Controller
                     'name' => $chat->store->name,
                     'imageURL' => $chat->store->imageURL,
                 ],
-                'lastMessage' => $lastMessage->message,
-                'lastSender' => $lastMessage->senderType,
+                'lastMessage' => $lastMessage ? $lastMessage->message : 'Nenhuma mensagem ainda',
+                'lastSender' => $lastMessage ? $lastMessage->senderType : null,
             ];
         });
 

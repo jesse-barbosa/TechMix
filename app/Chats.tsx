@@ -108,7 +108,7 @@ export default function Home() {
                   <Text 
                     className="text-neutral-400 text-md font-normal text-start"
                     numberOfLines={2}>
-                      <Text className="text-neutral-200 font-semibold">{chat.lastSender === 'user' ? 'Você: ' : 'Loja: '}</Text>
+                      {chat.lastSender && <Text className="text-neutral-200 font-semibold">{chat.lastSender === 'user' ? 'Você: ' : 'Loja: '}</Text> }
                       {chat.lastMessage}
                   </Text>
                 </View>
