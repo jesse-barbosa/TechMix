@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
 import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
@@ -47,14 +47,17 @@ export default function Login() {
   return (
     <View className="flex-1 justify-between items-center bg-neutral-800">
       {/* Header */}
-      <View className="w-full p-5">
+      <View className="w-full p-5 mt-2">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="bg-customYellow rounded-full p-2">
-            <ChevronLeft size={24} color="#262525" />
+          <TouchableOpacity className="">
+            <Image 
+              source={require('@/assets/images/icon.png')} 
+              style={{ height: 35, width: 53 }} 
+            />
           </TouchableOpacity>
           <Text className="text-white text-4xl font-bold ml-4">Entrar</Text>
         </View>
-        <Text className="w-full text-neutral-400 text-md mt-4 text-center">Por favor entre com sua conta existente</Text>
+        <Text className="w-full text-neutral-400 text-md mt-4 text-center">Inicie sessão com sua conta existente</Text>
       </View>
       {/* Main */}
       <View className="w-full p-5">

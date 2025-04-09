@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
 import axios from 'axios';
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
@@ -49,14 +49,17 @@ export default function Register() {
   return (
     <View className="flex-1 justify-between items-center bg-neutral-800">
       {/* Header */}
-      <View className="w-full p-5">
+      <View className="w-full p-5 mt-2">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="bg-customYellow rounded-full p-2">
-            <ChevronLeft size={24} color="#262525" />
+          <TouchableOpacity>
+          <Image 
+              source={require('@/assets/images/icon.png')} 
+              style={{ height: 35, width: 53 }} 
+            />
           </TouchableOpacity>
           <Text className="text-white text-4xl font-bold ml-4">Registrar</Text>
         </View>
-        <Text className="w-full text-neutral-400 text-md mt-4 text-center">Por favor, crie sua conta</Text>
+        <Text className="w-full text-neutral-400 text-md mt-4 text-center">Faça registro da sua conta na TechMix</Text>
       </View>
 
       {/* Main */}
