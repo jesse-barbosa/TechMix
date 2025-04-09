@@ -76,8 +76,7 @@ export default function Home() {
   return (
     <View className="flex-1 bg-neutral-800">
       <Header />
-      {
-        products.length === 0 ? (
+      {products.length === 0 ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
             <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
               <ArchiveX size={42} color="#C0C0C0" />
