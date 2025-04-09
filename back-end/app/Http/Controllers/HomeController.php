@@ -15,7 +15,7 @@ class HomeController extends Controller
     public function getProducts(Request $request): JsonResponse
     {
         // Fetch Products with their associated stores
-        $products = Product::with('store')->get();
+        $products = Product::with('store')->inRandomOrder()->limit(6)->get();
         $userId = $request->input("userId");
 
         // Transform the data to include only necessary store information
@@ -42,7 +42,7 @@ class HomeController extends Controller
     public function getOfficialProducts(Request $request): JsonResponse
     {
         // Fetch Products with their associated stores
-        $products = Product::with('store')->where('storeId', '1')->get();
+        $products = Product::with('store')->where('storeId', '1')->inRandomOrder()->limit(6)->get();
         $userId = $request->input("userId");
 
         // Transform the data to include only necessary store information
