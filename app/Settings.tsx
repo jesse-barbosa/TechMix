@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { ChevronRight, Heart, User, Settings, HelpCircle } from 'lucide-react-native';
+import { ChevronRight, Heart, User, HelpCircle, ArrowUpRight, LogOut } from 'lucide-react-native';
 import Menu from "@/app/components/Menu";
 
 export default function Home() {
@@ -44,18 +44,19 @@ export default function Home() {
 
       <TouchableOpacity className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-4 flex-row items-center justify-between">
         <View className="flex-row items-center">
-          <Settings size={26} color="#e5e5e5" />
-          <Text className="text-neutral-200 text-2xl font-semibold ml-3">Configurações</Text>
-        </View>
-        <ChevronRight size={24} color="#FFF" />
-      </TouchableOpacity>
-
-      <TouchableOpacity className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-4 flex-row items-center justify-between">
-        <View className="flex-row items-center">
           <HelpCircle size={26} color="#e5e5e5" />
           <Text className="text-neutral-200 text-2xl font-semibold ml-3">Ajuda</Text>
         </View>
-        <ChevronRight size={24} color="#FFF" />
+        <ArrowUpRight size={24} color="#FFF" />
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      className="w-full bg-neutral-700 px-6 py-8 rounded-xl shadow-lg mt-4 flex-row items-center justify-between"
+      onPress={() => (navigation as any).navigate('Login')}>
+        <View className="flex-row items-center">
+          <LogOut size={26} color="#e5e5e5" />
+          <Text className="text-neutral-200 text-2xl font-semibold ml-3">Sair da Conta</Text>
+        </View>
       </TouchableOpacity>
 
       </View>
