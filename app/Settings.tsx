@@ -13,14 +13,14 @@ export default function Home() {
     <View className="flex-1 bg-neutral-800">
       <ScrollView>
         <View className="flex-col flex items-center justify-center text-center">
-          <View className="absolute top-1 bg-yellow-500 h-32 p-3 w-full"></View>
+          <View className="absolute top-0 bg-yellow-500 h-32 p-3 w-full"></View>
             <Image 
               source={user.imageURL ? { uri: user.imageURL } : require('@/assets/images/users/default_icon.png')}
-              className="rounded-lg rounded-r-none w-48 h-48"
+              className="rounded-full rounded-r-none w-48 h-48"
             />
         <View className="text-center py-6">
-          <Text className="text-white text-2xl font-bold">{ user.name }</Text>
-          <Text className="text-neutral-400 text-lg">{user.email}</Text>
+          <Text className="text-white text-2xl font-bold text-center">{ user.name }</Text>
+          <Text className="text-neutral-400 text-lg text-center">{user.email}</Text>
         </View>
 
       </View>
