@@ -98,6 +98,33 @@ export default function ViewProduct() {
     getStoreData();
   }, [user]);
 
+  const handleOpenChat = async (storeId: number) => {
+    try {
+      const response = await axios.get(`${API_URL}/verifyChatExistence?storeId=${storeId}&userId=${user.id}`);
+      // Caso o chat já exista, apenas redireciona para a tela de chat
+      if (response.data.chatId) {
+        (navigation as any).navigate('ViewChat', { chatId: response.data.chatId });
+      } else {
+        // Caso o chat não exista, cria um
+        const response = await axios.post(`${API_URL}/createChat?storeId=${storeId}&userId=${user.id}`);
+        if(response.data.chat) {
+          (navigation as any).navigate('ViewChat', { chatId: response.data.chat.id });
+        } else {
+          Alert.alert('Erro ao criar Chat', 'Formato de dados inesperado do servidor.');
+        }
+      }
+    } catch (error: any) {
+      if (error.response) {
+        const message = error.response.data.message || 'Erro desconhecido no servidor';
+        Alert.alert('Erro ao abrir conversa', message);
+      } else if (error.request) {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Verifique sua internet.');
+      } else {
+        Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
+      }
+    }
+  }
+
   return (
     <View className="flex-1 bg-neutral-800">
       <ScrollView contentContainerStyle={{ paddingHorizontal: 10 }}>
@@ -110,7 +137,9 @@ export default function ViewProduct() {
 
               <Text className="text-neutral-200 font-semibold text-3xl">{store.name}</Text>
 
-              <TouchableOpacity className="flex items-end">
+              <TouchableOpacity 
+              className="flex items-end"
+              onPress={() => handleOpenChat(store.id)}>
                   <MessagesSquare size={24} color="white" />
               </TouchableOpacity>
             </View>

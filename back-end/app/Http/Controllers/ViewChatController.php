@@ -12,6 +12,35 @@ use Illuminate\Http\Request;
 
 class ViewChatController extends Controller
 {
+    public function createChat(Request $request)
+    {
+        $storeId = $request->input("storeId");
+        $userId = $request->input("userId");
+
+        $chat = Chat::create([
+            "userId"=> $userId,
+            "storeId"=> $storeId,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'chat' => $chat,
+        ]);
+    }
+    public function verifyChatExistence(Request $request): JsonResponse
+    {
+        $storeId = $request->input("storeId");
+        $userId = $request->input("userId");
+
+        $exist = Chat::where('storeId', $storeId)->where('userId', $userId)->exists();
+
+        return response()->json([
+            'success' => true,
+            'exist' => $exist,
+            'chatId' => $exist ? Chat::where('storeId', $storeId)->where('userId', $userId)->first()->id : null
+        ]);
+    }
+
     public function getChatData(Request $request): JsonResponse
     {
         $chatId = $request->input("chatId");

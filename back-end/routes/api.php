@@ -24,6 +24,10 @@ Route::get('/getStores', [HomeController::class, 'getStores']);
 
 Route::get('/getChats', [ChatsController::class, 'getChats']);
 
+Route::post('/createChat', [ViewChatController::class, 'createChat']);
+
+Route::get('/verifyChatExistence', [ViewChatController::class, 'verifyChatExistence']);
+
 Route::get('/getChatData', [ViewChatController::class, 'getChatData']);
 
 Route::post('/sendMessage', [ViewChatController::class, 'sendMessage']);
