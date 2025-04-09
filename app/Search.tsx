@@ -15,7 +15,7 @@ export default function Home() {
   const route = useRoute();
   const user = useSelector((state: RootState) => state.user);
   
-  const { categoryId } = route.params || {};
+  const { searchTerm: initialSearchTerm, categoryId } = route.params || {};
 
   type Store = {
     id: number;
@@ -53,7 +53,7 @@ export default function Home() {
   const [stores, setStores] = useState<Store[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [visitedProducts, setVisitedProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm || '');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [searchType, setSearchType] = useState<keyof typeof searchTypes>('product');
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -132,6 +132,12 @@ export default function Home() {
       search();
     }
   }, [searchType]);
+
+  useEffect(() => {
+    if (initialSearchTerm) {
+      search();
+    }
+  }, [initialSearchTerm]);
 
   const getImageUrl = (imageURL: string, type: string) => {
     if (!imageURL) {
