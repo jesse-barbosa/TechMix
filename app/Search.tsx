@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -7,6 +6,7 @@ import { RootState } from '../store';
 import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
+import Filter from "@/app/components/Modals/Filter";
 import ConfirmDeleteModal from "@/app/components/Modals/ConfirmDeleteModal";
 import { API_URL } from '@/apiConfig';
 
@@ -317,7 +317,9 @@ export default function Home() {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = (category: string, location: string) => {
+    setSelectedCategory(category);
+    setSelectedLocation(location);
     setFilterVisible(false);
     search();
   };
@@ -576,60 +578,15 @@ export default function Home() {
         </ScrollView>
       )}
       <Menu />
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={filterVisible}
-        onRequestClose={() => {
-          setFilterVisible(!filterVisible);
-        }}
-      >
-        <View className="flex-1 justify-center items-center mx-4">
-          <View className="bg-neutral-600 p-6 rounded-lg w-full">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-3xl text-white font-semibold">Filtrar resultados</Text>
-              <TouchableOpacity onPress={() => setFilterVisible(false)}>
-                <CircleX size={26} color="#FFF" />
-              </TouchableOpacity>
-            </View>
-            <View className="mb-4">
-              <Text className="text-neutral-200 text-xl mb-2">Categoria</Text>
-              <Picker
-                selectedValue={selectedCategory}
-                onValueChange={(itemValue: string) => setSelectedCategory(itemValue)}
-                style={{
-                  color: "#FFF",
-                  backgroundColor: "#636363",
-                }}
-              >
-                <Picker.Item label="Geral" value="" />
-                {categories.map((category, index) => (
-                  <Picker.Item key={index} label={category.name} value={category.name} />
-                ))}
-              </Picker>
-            </View>
-            <View className="mb-4">
-              <Text className="text-neutral-200 text-xl mb-2">Localização</Text>
-              <Picker
-                selectedValue={selectedLocation}
-                onValueChange={(itemValue: string) => setSelectedLocation(itemValue)}
-                style={{
-                  color: "#FFF",
-                  backgroundColor: "#636363",
-                }}
-              >
-                <Picker.Item label="Geral" value="" />
-                {locations.map((location, index) => (
-                  <Picker.Item key={index} label={location} value={location} />
-                ))}
-              </Picker>
-            </View>
-            <TouchableOpacity onPress={applyFilters} className="bg-yellow-500 p-3 mt-4 ">
-              <Text className="text-center text-neutral-800 font-bold text-lg">Aplicar Filtros</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <Filter 
+        visible={filterVisible} 
+        onClose={() => setFilterVisible(false)} 
+        onSubmit={applyFilters}
+        selectedCategory={selectedCategory}
+        selectedLocation={selectedLocation}
+        categories={categories}
+        locations={locations}
+      />
       <ConfirmDeleteModal 
         visible={isDeleteModalVisible} 
         onClose={() => setIsDeleteModalVisible(false)} 
