@@ -53,6 +53,8 @@ class SearchController extends Controller
     public function getVisitedProducts(Request $request): JsonResponse
     {
         $userId = $request->input("userId");
+        $page = $request->input("page", 1);
+        $perPage = $request->input("perPage", 15);
 
         if (!$userId) {
             return response()->json([
@@ -61,7 +63,13 @@ class SearchController extends Controller
             ]);
         }
 
-        // Fetch Saved Products with their associated stores
+        // Calculate offset
+        $offset = ($page - 1) * $perPage;
+
+        // Get total count for pagination info
+        $totalCount = VisitedProduct::where('userId', $userId)->count();
+
+        // Fetch Saved Products with their associated stores with pagination
         $visitedProducts = DB::table('visited_products')
             ->join('products', 'visited_products.productId', '=', 'products.id')
             ->join('stores', 'products.storeId', '=', 'stores.id')
@@ -71,11 +79,13 @@ class SearchController extends Controller
                 'stores.name as store_name',
                 'stores.city as store_city'
             )
+            ->orderBy('visited_products.updated_at', 'desc')
+            ->skip($offset)
+            ->take($perPage)
             ->get();
 
         // Transform the data to include only necessary store information
         $transformedProducts = $visitedProducts->map(function ($product) use ($userId) {
-
             $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
             return [
                 'id' => $product->id,
@@ -93,6 +103,12 @@ class SearchController extends Controller
         return response()->json([
             'success' => true,
             'visitedProducts' => $transformedProducts,
+            'pagination' => [
+                'currentPage' => (int)$page,
+                'perPage' => (int)$perPage,
+                'totalItems' => $totalCount,
+                'totalPages' => ceil($totalCount / $perPage)
+            ]
         ]);
     }
 
@@ -156,6 +172,8 @@ class SearchController extends Controller
         $searchType = $request->input("searchType", "product");
         $category = $request->input("category");
         $location = $request->input("location");
+        $page = $request->input("page", 1);
+        $perPage = $request->input("perPage", 15);
     
         if (!$userId) {
             return response()->json([
@@ -163,6 +181,9 @@ class SearchController extends Controller
                 'message' => 'User ID is required',
             ], 400);
         }
+    
+        // Calculate offset for pagination
+        $offset = ($page - 1) * $perPage;
     
         // Busca por loja
         if ($searchType === 'store') {
@@ -177,11 +198,21 @@ class SearchController extends Controller
                 $query->where('city', $location);
             }
     
-            $stores = $query->get();
+            // Get total count for pagination info
+            $totalCount = $query->count();
+            
+            // Apply pagination
+            $stores = $query->skip($offset)->take($perPage)->get();
     
             return response()->json([
                 'success' => true,
                 'stores' => $stores,
+                'pagination' => [
+                    'currentPage' => (int)$page,
+                    'perPage' => (int)$perPage,
+                    'totalItems' => $totalCount,
+                    'totalPages' => ceil($totalCount / $perPage)
+                ]
             ]);
         }
     
@@ -218,8 +249,15 @@ class SearchController extends Controller
                 $sq->where('city', $location);
             });
         }
+        
+        // Get total count for pagination info
+        $totalCount = $query->count();
     
-        $products = $query->with('store')->get();
+        // Apply pagination
+        $products = $query->with('store')
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
     
         $transformedProducts = $products->map(function ($product) use ($userId) {
             $isSaved = Favorite::where('userId', $userId)->where('productId', $product->id)->exists();
@@ -239,6 +277,12 @@ class SearchController extends Controller
         return response()->json([
             'success' => true,
             'products' => $transformedProducts,
+            'pagination' => [
+                'currentPage' => (int)$page,
+                'perPage' => (int)$perPage,
+                'totalItems' => $totalCount,
+                'totalPages' => ceil($totalCount / $perPage)
+            ]
         ]);
     }
 
@@ -249,7 +293,7 @@ class SearchController extends Controller
 
         return response()->json([
             'success' => true,
-            'categories' => $categories,
+            'categories' => $categories,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         ]);
     }
 
@@ -268,5 +312,5 @@ class SearchController extends Controller
             'success' => true,
             'locations' => $locations,
         ]);
-    }    
+    }
 }

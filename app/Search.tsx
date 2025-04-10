@@ -1,9 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX } from 'lucide-react-native';
+import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
 import Filter from "@/app/components/Modals/Filter";
@@ -45,6 +45,13 @@ export default function Home() {
     icon: string;
   }
 
+  type PaginationInfo = {
+    currentPage: number;
+    perPage: number;
+    totalItems: number;
+    totalPages: number;
+  }
+
   const searchTypes = {
     'product': ['Produtos'],
     'store': ['Lojas'],
@@ -66,6 +73,15 @@ export default function Home() {
   const [searchHistory, setSearchHistory] = useState<{ id: number, searchMessage: string }[]>([]);
   const [initialSearchDone, setInitialSearchDone] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
+    currentPage: 1,
+    perPage: 15,
+    totalItems: 0,
+    totalPages: 1
+  });
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -129,12 +145,14 @@ export default function Home() {
 
   useEffect(() => {
     if (initialSearchDone) {
+      setCurrentPage(1);
       search();
     }
   }, [searchType]);
 
   useEffect(() => {
     if (initialSearchTerm) {
+      setCurrentPage(1);
       search();
     }
   }, [initialSearchTerm]);
@@ -165,14 +183,20 @@ export default function Home() {
 
   const getVisitedProducts = async () => {
     try {
-      const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}`);
-      if (Array.isArray(response.data.visitedProducts)) {
+      setIsLoading(true);
+      const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}&page=${currentPage}&perPage=15`);
+      if (response.data.success) {
         setVisitedProducts(response.data.visitedProducts);
+        if (response.data.pagination) {
+          setPaginationInfo(response.data.pagination);
+        }
       } else {
         console.log('Formato inesperado:', response.data);
       }
+      setIsLoading(false);
     } catch (error) {
       console.error('Erro ao buscar produtos visitados:', error);
+      setIsLoading(false);
     }
   };
 
@@ -182,6 +206,12 @@ export default function Home() {
       if (response.data.success) {
         setVisitedProducts([]);
         setIsDeleteModalVisible(false);
+        setPaginationInfo({
+          currentPage: 1,
+          perPage: 15,
+          totalItems: 0,
+          totalPages: 1
+        });
       } else {
         console.log('Erro inesperado:', response.data);
       }
@@ -239,7 +269,6 @@ export default function Home() {
     try {
       const response = await axios.get(`${API_URL}/getLocations?search=${debouncedSearchTerm}`);
       if (Array.isArray(response.data.locations)) {
-        console.log('Definindo Localizações:', response.data.locations)
         setLocations(response.data.locations);
       } else {
         Alert.alert('Erro ao buscar localizações', 'Formato de dados inesperado do servidor.');
@@ -258,8 +287,20 @@ export default function Home() {
     }
   };
 
+  const changePage = (page: number) => {
+    if (page < 1 || page > paginationInfo.totalPages) return;
+    
+    setCurrentPage(page);
+    if (searchTerm.length === 0 && !categoryId) {
+      getVisitedProducts();
+    } else {
+      search();
+    }
+  };
+
   const search = async () => {
     try {
+      setIsLoading(true);
       if (categoryId && !selectedCategory && categories.length > 0) {
         const category = categories.find(cat => cat.id === Number(categoryId));
         if (category) {
@@ -271,6 +312,8 @@ export default function Home() {
       params.append('search', searchTerm);
       params.append('userId', user.id.toString());
       params.append('searchType', searchType);
+      params.append('page', currentPage.toString());
+      params.append('perPage', '15');
       
       if (categoryId && categories.length > 0) {
         const category = categories.find(cat => cat.id === Number(categoryId));
@@ -291,6 +334,9 @@ export default function Home() {
         if (Array.isArray(response.data.stores)) {
           setStores(response.data.stores);
           setShowHistory(false);
+          if (response.data.pagination) {
+            setPaginationInfo(response.data.pagination);
+          }
         } else {
           Alert.alert('Erro ao buscar lojas', 'Formato de dados inesperado do servidor.');
           console.log('response:', response.data);
@@ -299,11 +345,15 @@ export default function Home() {
         if (Array.isArray(response.data.products)) {
           setProducts(response.data.products);
           setShowHistory(false);
+          if (response.data.pagination) {
+            setPaginationInfo(response.data.pagination);
+          }
         } else {
           Alert.alert('Erro ao buscar produtos', 'Formato de dados inesperado do servidor.');
           console.log('response:', response.data);
         }
       }
+      setIsLoading(false);
     } catch (error: any) {
       if (error.response) {
         const message = error.response.data.message || 'Erro desconhecido no servidor';
@@ -314,14 +364,125 @@ export default function Home() {
         Alert.alert('Erro inesperado', error.message || 'Algo deu errado.');
       }
       console.error('Erro durante a busca:', error);
+      setIsLoading(false);
     }
   };
 
   const applyFilters = (category: string, location: string) => {
     setSelectedCategory(category);
     setSelectedLocation(location);
+    setCurrentPage(1);
     setFilterVisible(false);
     search();
+  };
+
+  const PaginationControls = () => {
+    if (paginationInfo.totalPages <= 1) return null;
+    
+    return (
+      <View className="flex-row justify-center items-center my-4">
+        <TouchableOpacity 
+          onPress={() => changePage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`p-2 ${currentPage === 1 ? 'opacity-50' : ''}`}
+        >
+          <ChevronLeft size={28} color="#C0C0C0" />
+        </TouchableOpacity>
+        
+        <View className="flex-row items-center">
+          {paginationInfo.totalPages <= 5 ? (
+            // Show all pages if 5 or fewer
+            Array.from({ length: paginationInfo.totalPages }, (_, i) => (
+              <TouchableOpacity
+                key={i + 1}
+                onPress={() => changePage(i + 1)}
+                className={`w-10 h-10 rounded-full mx-1 items-center justify-center ${
+                  currentPage === i + 1 ? 'bg-yellow-500' : 'bg-neutral-700'
+                }`}
+              >
+                <Text className={`${
+                  currentPage === i + 1 ? 'text-neutral-800' : 'text-neutral-200'
+                } font-bold`}>{i + 1}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            // Show limited pages with ellipsis for many pages
+            <>
+              {currentPage > 2 && (
+                <TouchableOpacity
+                  onPress={() => changePage(1)}
+                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
+                >
+                  <Text className="text-neutral-200 font-bold">1</Text>
+                </TouchableOpacity>
+              )}
+              
+              {currentPage > 3 && (
+                <Text className="text-neutral-400 mx-1">...</Text>
+              )}
+              
+              {currentPage > 1 && (
+                <TouchableOpacity
+                  onPress={() => changePage(currentPage - 1)}
+                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
+                >
+                  <Text className="text-neutral-200 font-bold">{currentPage - 1}</Text>
+                </TouchableOpacity>
+              )}
+              
+              <TouchableOpacity
+                className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-yellow-500"
+              >
+                <Text className="text-neutral-800 font-bold">{currentPage}</Text>
+              </TouchableOpacity>
+              
+              {currentPage < paginationInfo.totalPages && (
+                <TouchableOpacity
+                  onPress={() => changePage(currentPage + 1)}
+                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
+                >
+                  <Text className="text-neutral-200 font-bold">{currentPage + 1}</Text>
+                </TouchableOpacity>
+              )}
+              
+              {currentPage < paginationInfo.totalPages - 2 && (
+                <Text className="text-neutral-400 mx-1">...</Text>
+              )}
+              
+              {currentPage < paginationInfo.totalPages - 1 && (
+                <TouchableOpacity
+                  onPress={() => changePage(paginationInfo.totalPages)}
+                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
+                >
+                  <Text className="text-neutral-200 font-bold">{paginationInfo.totalPages}</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        </View>
+        
+        <TouchableOpacity 
+          onPress={() => changePage(currentPage + 1)}
+          disabled={currentPage === paginationInfo.totalPages}
+          className={`p-2 ${currentPage === paginationInfo.totalPages ? 'opacity-50' : ''}`}
+        >
+          <ChevronRight size={28} color="#C0C0C0" />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderPaginationInfo = () => {
+    if (paginationInfo.totalItems === 0) return null;
+    
+    const startItem = ((currentPage - 1) * paginationInfo.perPage) + 1;
+    const endItem = Math.min(currentPage * paginationInfo.perPage, paginationInfo.totalItems);
+    
+    return (
+      <Text className="text-neutral-400 text-center mb-2">
+        Mostrando {startItem}-{endItem} de {paginationInfo.totalItems} resultados
+      </Text>
+    );
   };
 
   return (
@@ -341,7 +502,10 @@ export default function Home() {
             onFocus={() => setShowHistory(true)}
             onBlur={() => setTimeout(() => setShowHistory(false), 200)}
           />
-          <TouchableOpacity onPress={() => search()}>
+          <TouchableOpacity onPress={() => {
+            setCurrentPage(1);
+            search();
+          }}>
             <Search size={26} color="#C0C0C0" />
           </TouchableOpacity>
         </View>
@@ -352,6 +516,7 @@ export default function Home() {
               className="flex-row justify-between items-center"
               onPress={() => {
                 setSearchTerm(item.searchMessage);
+                setCurrentPage(1)
                 search()
                 setShowHistory(false);
               }}>
@@ -371,7 +536,14 @@ export default function Home() {
         )}
       </View>
 
-      {searchTerm.length === 0 && visitedProducts.length > 0 && !categoryId ? (
+      {isLoading && (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#F59E0B" />
+          <Text className="text-neutral-300 mt-4">Carregando...</Text>
+        </View>
+      )}
+
+      {!isLoading && searchTerm.length === 0 && visitedProducts.length > 0 && !categoryId ? (
         <ScrollView showsHorizontalScrollIndicator={true} style={{ padding: 20, marginBottom: 20 }}>
           <View className="flex flex-row justify-between">
             <Text className="text-neutral-400 text-2xl font-bold mb-4">Visto Recentemente</Text>
@@ -385,9 +557,6 @@ export default function Home() {
                 <Image
                   source={getImageUrl(product.imageURL, 'product')}
                   className="rounded-lg rounded-r-none h-full w-28"
-                  onError={(e) => {
-                    console.log('Image load error:', e.nativeEvent.error);
-                  }}
                 />
               </View>
               <View className="flex-1 flex flex-col justify-between py-2">
@@ -414,8 +583,11 @@ export default function Home() {
               </TouchableOpacity>
             </TouchableOpacity>
           ))}
+          
+          {renderPaginationInfo()}
+          <PaginationControls />
         </ScrollView>
-      ) : products.length === 0 && visitedProducts.length === 0 ? (
+      ) : !isLoading && products.length === 0 && stores.length === 0 && visitedProducts.length === 0 ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
             <View className="flex items-center bg-neutral-700 p-6 shadow-lg rounded-lg w-full">
               <ArchiveX size={42} color="#C0C0C0" />
@@ -423,10 +595,13 @@ export default function Home() {
               <Text className="text-neutral-400 text-lg mt-2 text-center">Ajuste os filtros e confira o termo digitado.</Text>
             </View>
           </View>
-        ) : searchType === 'store' ? (
+        ) : !isLoading && searchType === 'store' ? (
           <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
           <View className="flex-row justify-between">
-            <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ stores.length }</Text> Resultados Encontrados</Text>
+            <Text className="text-neutral-400 text-2xl font-bold">
+              <Text className="text-yellow-500">{ stores.length }</Text> Resultados 
+              {paginationInfo.totalItems > 0 && <Text> de {paginationInfo.totalItems}</Text>}
+            </Text>
             <TouchableOpacity onPress={() => setFilterVisible(true)}>
               {selectedCategory || selectedLocation ? (
                 <View className="p-1 bg-yellow-500 rounded">
@@ -436,7 +611,6 @@ export default function Home() {
                 <View className="p-1">
                   <SlidersHorizontal size={24} color="#C0C0C0" />
                 </View>
-
               )}
             </TouchableOpacity>
           </View>
@@ -445,9 +619,9 @@ export default function Home() {
               <TouchableOpacity
                 key={key}
                 className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                onPress={async () => {
-                  await setSearchType(key as keyof typeof searchTypes);
-                  search();
+                onPress={() => {
+                  setSearchType(key as keyof typeof searchTypes);
+                  setCurrentPage(1);
                 }}>
                 <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
               </TouchableOpacity>
@@ -469,9 +643,6 @@ export default function Home() {
                 <Image
                   source={getImageUrl(store.imageURL, 'store')}
                   className="rounded-lg rounded-r-none h-full w-32"
-                  onError={(e) => {
-                    console.log('Image load error:', e.nativeEvent.error);
-                  }}
                 />
               </View>
               <View className="flex flex-col items-start justify-between py-4 px-2">
@@ -499,11 +670,17 @@ export default function Home() {
             </TouchableOpacity>
           ))}
           </ScrollView>
+          
+          {renderPaginationInfo()}
+          <PaginationControls />
         </ScrollView>
-        ) : (
+        ) : !isLoading && (
         <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
           <View className="flex-row justify-between">
-            <Text className="text-neutral-400 text-2xl font-bold"><Text className="text-yellow-500">{ products.length }</Text> Resultados Encontrados</Text>
+            <Text className="text-neutral-400 text-2xl font-bold">
+              <Text className="text-yellow-500">{ products.length }</Text> Resultados
+              {paginationInfo.totalItems > 0 && <Text> de {paginationInfo.totalItems}</Text>}
+            </Text>
             <TouchableOpacity onPress={() => setFilterVisible(true)}>
             {selectedCategory || selectedLocation ? (
                 <View className="p-1 bg-yellow-500 rounded">
@@ -521,9 +698,9 @@ export default function Home() {
               <TouchableOpacity
                 key={key}
                 className={`${searchType === key ? "bg-yellow-500" : "bg-neutral-700"} py-3 px-5 rounded-lg`}
-                onPress={async () => {
-                  await setSearchType(key as keyof typeof searchTypes);
-                  search();
+                onPress={() => {
+                  setSearchType(key as keyof typeof searchTypes);
+                  setCurrentPage(1);
                 }}>
                 <Text className={`${searchType === key ? "text-neutral-700" : "text-neutral-200"} text-xl font-bold`}>{value}</Text>
               </TouchableOpacity>
@@ -575,23 +752,27 @@ export default function Home() {
               </TouchableOpacity>
             ))}
           </ScrollView>
-        </ScrollView>
-      )}
-      <Menu />
-      <Filter 
-        visible={filterVisible} 
-        onClose={() => setFilterVisible(false)} 
-        onSubmit={applyFilters}
-        selectedCategory={selectedCategory}
-        selectedLocation={selectedLocation}
-        categories={categories}
-        locations={locations}
-      />
-      <ConfirmDeleteModal 
-        visible={isDeleteModalVisible} 
-        onClose={() => setIsDeleteModalVisible(false)} 
-        onSubmit={handleDeleteConfirm} 
-      />
-    </View>
+
+          {renderPaginationInfo()}
+          <PaginationControls />
+          </ScrollView>
+          )}
+
+          <Menu />
+          <Filter 
+            visible={filterVisible} 
+            onClose={() => setFilterVisible(false)} 
+            onSubmit={applyFilters}
+            selectedCategory={selectedCategory}
+            selectedLocation={selectedLocation}
+            categories={categories}
+            locations={locations}
+          />
+          <ConfirmDeleteModal 
+            visible={isDeleteModalVisible} 
+            onClose={() => setIsDeleteModalVisible(false)} 
+            onSubmit={handleDeleteConfirm} 
+          />
+          </View>
   );
 }
