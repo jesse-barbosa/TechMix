@@ -50,7 +50,7 @@ export default function Filter({
       visible={visible}
     >
       <View className="flex-1 justify-center items-center mx-4">
-        <View className="bg-neutral-600 p-6 rounded-lg w-full">
+        <View className="component p-6 rounded-lg w-full">
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-3xl text-white font-semibold">Filtrar resultados</Text>
             <TouchableOpacity onPress={onClose}>
