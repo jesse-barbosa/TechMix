@@ -243,7 +243,6 @@ export default function Home() {
 
       if (Array.isArray(response.data.stores)) {
         setStores(response.data.stores);
-        console.log('Definindo Lojas com:', response.data.stores);
       } else {
         console.error('Expected an array of stores, but received:', response.data);
         Alert.alert('Erro ao buscar Lojas', 'Formato de dados inesperado do servidor.');
