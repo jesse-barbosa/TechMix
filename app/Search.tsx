@@ -1,14 +1,16 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, CircleX, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import axios from 'axios';
 import Menu from "@/app/components/Menu";
 import Filter from "@/app/components/Modals/Filter";
 import ConfirmDeleteModal from "@/app/components/Modals/ConfirmDeleteModal";
 import { API_URL } from '@/apiConfig';
+import { PaginationControls } from '@/app/components/paginationControls';
 
 export default function Home() {
   const navigation = useNavigation();
@@ -151,6 +153,17 @@ export default function Home() {
   }, [searchType]);
 
   useEffect(() => {
+    // Only fetch data when currentPage changes and we've already done an initial search
+    if (initialSearchDone) {
+      if (searchTerm.length === 0 && !categoryId) {
+        getVisitedProducts();
+      } else {
+        search();
+      }
+    }
+  }, [currentPage]);  
+
+  useEffect(() => {
     if (initialSearchTerm) {
       setCurrentPage(1);
       search();
@@ -198,7 +211,7 @@ export default function Home() {
       console.error('Erro ao buscar produtos visitados:', error);
       setIsLoading(false);
     }
-  };
+  };  
 
   const handleDeleteConfirm = async () => {
     try {
@@ -287,17 +300,6 @@ export default function Home() {
     }
   };
 
-  const changePage = (page: number) => {
-    if (page < 1 || page > paginationInfo.totalPages) return;
-    
-    setCurrentPage(page);
-    if (searchTerm.length === 0 && !categoryId) {
-      getVisitedProducts();
-    } else {
-      search();
-    }
-  };
-
   const search = async () => {
     try {
       setIsLoading(true);
@@ -374,102 +376,6 @@ export default function Home() {
     setCurrentPage(1);
     setFilterVisible(false);
     search();
-  };
-
-  const PaginationControls = () => {
-    if (paginationInfo.totalPages <= 1) return null;
-    
-    return (
-      <View className="flex-row justify-center items-center my-4">
-        <TouchableOpacity 
-          onPress={() => changePage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`p-2 ${currentPage === 1 ? 'opacity-50' : ''}`}
-        >
-          <ChevronLeft size={28} color="#C0C0C0" />
-        </TouchableOpacity>
-        
-        <View className="flex-row items-center">
-          {paginationInfo.totalPages <= 5 ? (
-            // Show all pages if 5 or fewer
-            Array.from({ length: paginationInfo.totalPages }, (_, i) => (
-              <TouchableOpacity
-                key={i + 1}
-                onPress={() => changePage(i + 1)}
-                className={`w-10 h-10 rounded-full mx-1 items-center justify-center ${
-                  currentPage === i + 1 ? 'bg-yellow-500' : 'bg-neutral-700'
-                }`}
-              >
-                <Text className={`${
-                  currentPage === i + 1 ? 'text-neutral-800' : 'text-neutral-200'
-                } font-bold`}>{i + 1}</Text>
-              </TouchableOpacity>
-            ))
-          ) : (
-            // Show limited pages with ellipsis for many pages
-            <>
-              {currentPage > 2 && (
-                <TouchableOpacity
-                  onPress={() => changePage(1)}
-                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
-                >
-                  <Text className="text-neutral-200 font-bold">1</Text>
-                </TouchableOpacity>
-              )}
-              
-              {currentPage > 3 && (
-                <Text className="text-neutral-400 mx-1">...</Text>
-              )}
-              
-              {currentPage > 1 && (
-                <TouchableOpacity
-                  onPress={() => changePage(currentPage - 1)}
-                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
-                >
-                  <Text className="text-neutral-200 font-bold">{currentPage - 1}</Text>
-                </TouchableOpacity>
-              )}
-              
-              <TouchableOpacity
-                className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-yellow-500"
-              >
-                <Text className="text-neutral-800 font-bold">{currentPage}</Text>
-              </TouchableOpacity>
-              
-              {currentPage < paginationInfo.totalPages && (
-                <TouchableOpacity
-                  onPress={() => changePage(currentPage + 1)}
-                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
-                >
-                  <Text className="text-neutral-200 font-bold">{currentPage + 1}</Text>
-                </TouchableOpacity>
-              )}
-              
-              {currentPage < paginationInfo.totalPages - 2 && (
-                <Text className="text-neutral-400 mx-1">...</Text>
-              )}
-              
-              {currentPage < paginationInfo.totalPages - 1 && (
-                <TouchableOpacity
-                  onPress={() => changePage(paginationInfo.totalPages)}
-                  className="w-10 h-10 rounded-full mx-1 items-center justify-center bg-neutral-700"
-                >
-                  <Text className="text-neutral-200 font-bold">{paginationInfo.totalPages}</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          )}
-        </View>
-        
-        <TouchableOpacity 
-          onPress={() => changePage(currentPage + 1)}
-          disabled={currentPage === paginationInfo.totalPages}
-          className={`p-2 ${currentPage === paginationInfo.totalPages ? 'opacity-50' : ''}`}
-        >
-          <ChevronRight size={28} color="#C0C0C0" />
-        </TouchableOpacity>
-      </View>
-    );
   };
 
   const renderPaginationInfo = () => {
@@ -585,7 +491,15 @@ export default function Home() {
           ))}
           
           {renderPaginationInfo()}
-          <PaginationControls />
+          <PaginationControls 
+            paginationInfo={paginationInfo}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            searchTerm={searchTerm}
+            categoryId={categoryId}
+            getVisitedProducts={getVisitedProducts}
+            search={search}
+          />
         </ScrollView>
       ) : !isLoading && products.length === 0 && stores.length === 0 && visitedProducts.length === 0 ? (
           <View className="flex-1 flex justify-center items-center py-20 px-4">
@@ -672,7 +586,15 @@ export default function Home() {
           </ScrollView>
           
           {renderPaginationInfo()}
-          <PaginationControls />
+          <PaginationControls 
+            paginationInfo={paginationInfo}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            searchTerm={searchTerm}
+            categoryId={categoryId}
+            getVisitedProducts={getVisitedProducts}
+            search={search}
+          />
         </ScrollView>
         ) : !isLoading && (
         <ScrollView className="my-2" contentContainerStyle={{ padding: 20 }}>
@@ -754,7 +676,15 @@ export default function Home() {
           </ScrollView>
 
           {renderPaginationInfo()}
-          <PaginationControls />
+          <PaginationControls 
+            paginationInfo={paginationInfo}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            searchTerm={searchTerm}
+            categoryId={categoryId}
+            getVisitedProducts={getVisitedProducts}
+            search={search}
+          />
           </ScrollView>
           )}
 
