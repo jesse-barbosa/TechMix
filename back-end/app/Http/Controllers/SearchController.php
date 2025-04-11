@@ -53,8 +53,6 @@ class SearchController extends Controller
     public function getVisitedProducts(Request $request): JsonResponse
     {
         $userId = $request->input("userId");
-        $page = $request->input("page", 1);
-        $perPage = $request->input("perPage", 15);
 
         if (!$userId) {
             return response()->json([
@@ -62,12 +60,6 @@ class SearchController extends Controller
                 'message' => 'User ID is required',
             ]);
         }
-
-        // Calculate offset
-        $offset = ($page - 1) * $perPage;
-
-        // Get total count for pagination info
-        $totalCount = VisitedProduct::where('userId', $userId)->count();
 
         // Fetch Saved Products with their associated stores with pagination
         $visitedProducts = DB::table('visited_products')
@@ -80,8 +72,6 @@ class SearchController extends Controller
                 'stores.city as store_city'
             )
             ->orderBy('visited_products.updated_at', 'desc')
-            ->skip($offset)
-            ->take($perPage)
             ->get();
 
         // Transform the data to include only necessary store information
@@ -103,15 +93,9 @@ class SearchController extends Controller
         return response()->json([
             'success' => true,
             'visitedProducts' => $transformedProducts,
-            'pagination' => [
-                'currentPage' => (int)$page,
-                'perPage' => (int)$perPage,
-                'totalItems' => $totalCount,
-                'totalPages' => ceil($totalCount / $perPage)
-            ]
         ]);
     }
-
+    
     public function deleteVisitedProducts(Request $request): JsonResponse
     {
         $userId = $request->input("userId");

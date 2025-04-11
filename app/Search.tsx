@@ -197,12 +197,10 @@ export default function Home() {
   const getVisitedProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}&page=${currentPage}&perPage=15`);
-      if (response.data.success) {
+
+      const response = await axios.get(`${API_URL}/getVisitedProducts?userId=${user.id}`);
+      if (Array.isArray(response.data.visitedProducts)) {
         setVisitedProducts(response.data.visitedProducts);
-        if (response.data.pagination) {
-          setPaginationInfo(response.data.pagination);
-        }
       } else {
         console.log('Formato inesperado:', response.data);
       }
@@ -211,7 +209,7 @@ export default function Home() {
       console.error('Erro ao buscar produtos visitados:', error);
       setIsLoading(false);
     }
-  };  
+  };
 
   const handleDeleteConfirm = async () => {
     try {
@@ -300,7 +298,7 @@ export default function Home() {
     }
   };
 
-  const search = async () => {
+  const search = async (pageToUse?: number) => {
     try {
       setIsLoading(true);
       if (categoryId && !selectedCategory && categories.length > 0) {
@@ -314,7 +312,8 @@ export default function Home() {
       params.append('search', searchTerm);
       params.append('userId', user.id.toString());
       params.append('searchType', searchType);
-      params.append('page', currentPage.toString());
+      // Use o parâmetro pageToUse se fornecido, caso contrário use currentPage
+      params.append('page', pageToUse ? pageToUse.toString() : currentPage.toString());
       params.append('perPage', '15');
       
       if (categoryId && categories.length > 0) {
@@ -330,9 +329,11 @@ export default function Home() {
         params.append('location', selectedLocation);
       }
       
+      console.log("Searching with page:", pageToUse || currentPage);
+      
       const response = await axios.post(`${API_URL}/search?${params.toString()}`);
       
-      if(searchType === 'store') {
+      if (searchType === 'store') {
         if (Array.isArray(response.data.stores)) {
           setStores(response.data.stores);
           setShowHistory(false);
@@ -355,6 +356,7 @@ export default function Home() {
           console.log('response:', response.data);
         }
       }
+      
       setIsLoading(false);
     } catch (error: any) {
       if (error.response) {
