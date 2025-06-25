@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from '@react-navigation/native';
-import ReviewModal from '@/app/components/Modals/ReviewModal';
+import ReviewModal from '@/screens/components/Modals/ReviewModal';
 import { Heart, MapPin, ChevronLeft, ChevronDown, PencilOff, Star, PencilLine, CheckCheck, Trash2, Store } from 'lucide-react-native';
 import axios from 'axios';
 import { API_URL } from '@/apiConfig';

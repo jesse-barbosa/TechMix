@@ -8,6 +8,5 @@ module.exports = {
           customYellow: '#D4E300',
         },
       },
-    },
-    plugins: [],
+    }
   }

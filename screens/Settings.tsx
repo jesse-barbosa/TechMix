@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { ChevronRight, Heart, User, HelpCircle, ArrowUpRight, LogOut } from 'lucide-react-native';
-import Menu from "@/app/components/Menu";
+import Menu from "@/screens/components/Menu";
 
 export default function Home() {
   const user = useSelector((state: RootState) => state.user);

@@ -1,19 +1,19 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
-import store from '../store';
+import store from './store';
 import '@/global.css';
 /* Pages */
-import LoginScreen from './Login';
-import RegisterScreen from './Register';
-import HomeScreen from './Home';
-import SearchScreen from './Search';
-import FavsScreen from './Favs';
-import ChatsScreen from './Chats';
-import ViewChatScreen from './ViewChat';
-import SettingsScreen from './Settings';
-import ViewProfileScreen from './ViewProfile';
-import ViewProductScreen from './ViewProduct';
-import ViewStoreScreen from './ViewStore';
+import LoginScreen from './screens/Login';
+import RegisterScreen from './screens/Register';
+import HomeScreen from './screens/Home';
+import SearchScreen from './screens/Search';
+import FavsScreen from './screens/Favs';
+import ChatsScreen from './screens/Chats';
+import ViewChatScreen from './screens/ViewChat';
+import SettingsScreen from './screens/Settings';
+import ViewProfileScreen from './screens/ViewProfile';
+import ViewProductScreen from './screens/ViewProduct';
+import ViewStoreScreen from './screens/ViewStore';
 
 const Stack = createStackNavigator();
 

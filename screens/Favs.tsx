@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Heart, MapPin, ArchiveX } from 'lucide-react-native';
 import axios from 'axios';
-import Header from "@/app/components/Header";
-import Menu from "@/app/components/Menu";
+import Header from "@/screens/components/Header";
+import Menu from "@/screens/components/Menu";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {

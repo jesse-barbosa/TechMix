@@ -7,8 +7,8 @@ import { RootState } from '../store';
 import { Heart, MapPin } from 'lucide-react-native';
 import { CircleHelp, Monitor, Laptop, Cpu, Keyboard, HardDrive, Printer, Wifi, Smartphone, Gamepad, Headphones } from 'lucide-react-native';
 import axios from 'axios';
-import Menu from "@/app/components/Menu";
-import Header from "@/app/components/Header";
+import Menu from "@/screens/components/Menu";
+import Header from "@/screens/components/Header";
 import { API_URL } from '@/apiConfig';
 
 export default function Home() {

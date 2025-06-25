@@ -6,11 +6,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Heart, MapPin, Search, History, X, ArchiveX, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import axios from 'axios';
-import Menu from "@/app/components/Menu";
-import Filter from "@/app/components/Modals/Filter";
-import ConfirmDeleteModal from "@/app/components/Modals/ConfirmDeleteModal";
+import Menu from "@/screens/components/Menu";
+import Filter from "@/screens/components/Modals/Filter";
+import ConfirmDeleteModal from "@/screens/components/Modals/ConfirmDeleteModal";
 import { API_URL } from '@/apiConfig';
-import { PaginationControls } from '@/app/components/paginationControls';
+import { PaginationControls } from '@/screens/components/paginationControls';
 
 export default function Home() {
   const navigation = useNavigation();
